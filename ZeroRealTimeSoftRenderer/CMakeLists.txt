@@ -11,7 +11,7 @@ file(GLOB HEADERS
 
 file(GLOB SOURCES 
     "src/platform/*.cpp"
-    "src/core/a.cpp"
+    "src/core/*.cpp"
     "src/main.cpp"
 )
 
