@@ -3,6 +3,7 @@
 
 class ZeroRealTimeSoftEngine : public App
 {
+public:
 	ZeroRealTimeSoftEngine() : App() 
 	{
 	}
@@ -25,6 +26,7 @@ int main(int argc, const char** argv)
 {
 	std::cout << "Hello Zero Real Time Soft Engine!";
 	
+	return 0;
 	ZeroRealTimeSoftEngine* app = new ZeroRealTimeSoftEngine();
 
 	app->Run(app);
