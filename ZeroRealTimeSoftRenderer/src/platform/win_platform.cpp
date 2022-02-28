@@ -28,3 +28,9 @@ void App::ShutDown()
 
 }
 
+void App::RegisterWindows()
+{
+	
+}
+
+

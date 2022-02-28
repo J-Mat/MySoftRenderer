@@ -26,7 +26,8 @@ public:
 	virtual void Render();
 	
 	virtual void ShutDown();
-
+private: 
+	void RegisterWindows();
 private: 
 	static App* s_app;
 	WindowInfo m_window_info;
