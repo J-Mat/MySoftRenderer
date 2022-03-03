@@ -22,24 +22,33 @@ set(INCLUDE
 
 include_directories(${INCLUDE})
 
-add_executable(${PROJECT_NAME} 
+IF(WIN32)
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") 
+ENDIF(WIN32)
+
+add_executable(
+    ${PROJECT_NAME} 
+    WIN32
     ${SOURCES}
     ${HEADERS} 
     src/main.cpp
 )
 
-IF(WIN32)
-    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS") 
-ENDIF(WIN32)
 
-add_executable("Test"
+
+
+add_executable(
+    "Test"
     WIN32
     src/test/test.cpp
 )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_property(TARGET "Test" PROPERTY WIN32_EXECUTABLE true)
+endif()
+
 set_directory_properties(PROPERTIES VS_STARTUP_PROJECT ZeroRealTimeSoftRender)
 
 
-source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${HEADERS} ${SOURCES})
 source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${HEADERS} ${SOURCES})
 

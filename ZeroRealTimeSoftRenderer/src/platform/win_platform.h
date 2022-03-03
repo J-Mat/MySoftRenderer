@@ -1,10 +1,20 @@
 #pragma once
 #include <Windows.h>
 
+
+struct WindowsParameters
+{
+	WindowsParameters() = default;
+	HINSTANCE hInstance;
+	HINSTANCE hPrevInstance;
+	PWSTR pCmdLine;
+	int nCmdShow;
+};
+
 struct WindowInfo
 {
 	WindowInfo() = default;
-	HWND h_windows;
+	HWND hwnd;
 	HDC  men_dc;
 	HBITMAP bm_old;
 	unsigned char* window_fb = nullptr;
@@ -18,8 +28,12 @@ class App
 public:
 	App() = default;
 	virtual ~App() = default;
+	
+	static  App* GetApp() { return s_app; }
 
-	virtual void Init();
+	const WindowInfo& GetWindowInfo() { return m_window_info; };
+
+	virtual void Init(const WindowsParameters& windows_parameters);
 	
 	virtual void Run(App* app);
 	
@@ -27,7 +41,8 @@ public:
 	
 	virtual void ShutDown();
 private: 
-	void RegisterWindows();
+	void RegisterWindows(const WindowsParameters& windows_parameters);
+	void InitBitmapHeader(BITMAPINFOHEADER& bitmap_header);
 private: 
 	static App* s_app;
 	WindowInfo m_window_info;

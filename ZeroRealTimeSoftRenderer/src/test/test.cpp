@@ -14,6 +14,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
+	wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.hCursor = LoadCursor(0, IDC_ARROW);
 
 	RegisterClass(&wc);
 
@@ -46,28 +49,103 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	MSG msg = { };
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+		cout << "xoxo0-00" << endl;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
-	return 0;
+	srand(time(NULL));
+
+	return (int)msg.wParam;
+}
+
+void DrawPixels(HWND hwnd)
+{
+	PAINTSTRUCT ps;
+	RECT r;
+	
+	GetClientRect(hwnd, &r);
+	
+	if (r.bottom == 0)
+	{
+		return;
+	}
+	HDC hdc = BeginPaint(hwnd, &ps);
+	for (int i = 0; i < 1000; ++i)
+	{
+		int x = rand() % r.right;
+		int y = rand() % r.bottom;
+		
+		SetPixel(hdc, x, y,	RGB(255, 0, 0));
+	}
+	EndPaint(hwnd, &ps);
+}
+
+void DrawLines(HWND hwnd)
+{
+	HDC hdc;
+	PAINTSTRUCT ps;
+	hdc = BeginPaint(hwnd, &ps);
+	
+	MoveToEx(hdc, 50, 50, nullptr);
+	LineTo(hdc, 250, 50);
+
+	HPEN hBlackPen = (HPEN)GetStockObject(BLACK_PEN);
+	HPEN hOldPen = (HPEN)SelectObject(hdc, hBlackPen);
+
+	EndPaint(hwnd, &ps);
+}
+
+void DrawRectangle(HWND hwnd)
+{
+	HDC hdc;
+	PAINTSTRUCT ps;
+	hdc = BeginPaint(hwnd, &ps);
+	Rectangle(hdc, 50, 50, 700, 100);
+	EndPaint(hwnd, &ps);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
+	static HBITMAP hBitmap;
 	HDC hdc;
+	PAINTSTRUCT ps;
+	BITMAP bitmap;
+	HDC hdcMem;
+	HGDIOBJ oldBitmap;
 	switch (uMsg)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
 
+	case WM_CREATE:
+		hBitmap = (HBITMAP)LoadImageW(NULL, L"C:\\prog\\slovakia.bmp",
+			IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
+		if (hBitmap == NULL) {
+			MessageBoxW(hwnd, L"Failed to load image", L"Error", MB_OK);
+		}
+
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
-		TextOut(hdc, 0, 0, "Hello, Windows!", 15);
+
+		hdcMem = CreateCompatibleDC(hdc);
+		oldBitmap = SelectObject(hdcMem, hBitmap);
+
+		GetObject(hBitmap, sizeof(bitmap), &bitmap);
+		BitBlt(hdc, 5, 5, bitmap.bmWidth, bitmap.bmHeight,
+			hdcMem, 0, 0, SRCCOPY);
+
+		SelectObject(hdcMem, oldBitmap);
+		DeleteDC(hdcMem);
+
 		EndPaint(hwnd, &ps);
+
+		break;
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
