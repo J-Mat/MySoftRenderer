@@ -29,6 +29,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	
 	WindowsParameters windows_parameters = { hInstance, hPrevInstance, pCmdLine, nCmdShow };
 	ZeroRealTimeSoftEngine* app = new ZeroRealTimeSoftEngine();
+		
 
 	app->Init(windows_parameters);
 

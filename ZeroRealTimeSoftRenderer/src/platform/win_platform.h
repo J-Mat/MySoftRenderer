@@ -15,9 +15,10 @@ struct WindowInfo
 {
 	WindowInfo() = default;
 	HWND hwnd;
-	HDC  men_dc;
-	HBITMAP bm_old;
-	unsigned char* window_fb = nullptr;
+	HDC  hdc;
+	HBITMAP hbitmap;
+	HBITMAP old_hbitmap;
+	unsigned char* frame_buffer = nullptr;
 	unsigned int width = 800;
 	unsigned int height = 600;
 	bool is_close = false;
@@ -37,11 +38,12 @@ public:
 	
 	virtual void Run(App* app);
 	
-	virtual void Render();
+	virtual void Render() = 0;
 	
 	virtual void ShutDown();
 private: 
 	void RegisterWindows(const WindowsParameters& windows_parameters);
+	void InitBitMap();
 	void InitBitmapHeader(BITMAPINFOHEADER& bitmap_header);
 private: 
 	static App* s_app;

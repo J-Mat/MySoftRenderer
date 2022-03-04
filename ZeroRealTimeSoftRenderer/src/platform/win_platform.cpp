@@ -13,9 +13,11 @@ void App::Init(const WindowsParameters& windows_parameters)
 
 	RegisterWindows(windows_parameters);
 	RECT rect = { 0, 0, m_window_info.width, m_window_info.height };
-	
+
+	InitBitMap();
+
+
 	ShowWindow(m_window_info.hwnd, windows_parameters.nCmdShow);
-	
 }
 
 void App::Run(App* app)
@@ -23,16 +25,10 @@ void App::Run(App* app)
 	MSG msg = { };
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		cout << "1122--------  "<< endl;
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		Render();
 	}
-}
-
-void App::Render()
-{
-
 }
 
 void App::ShutDown()
@@ -86,5 +82,28 @@ void App::RegisterWindows(const WindowsParameters& windows_parameters)
 void App::InitBitmapHeader(BITMAPINFOHEADER& bitmap_header)
 {
 	memset(&bitmap_header, 0, sizeof(BITMAPINFOHEADER));
+	bitmap_header.biSize = sizeof(BITMAPINFOHEADER);
+	bitmap_header.biWidth = m_window_info.width;
+	bitmap_header.biHeight = -m_window_info.height;
+	bitmap_header.biPlanes = 1;
 }
+
+
+void App::InitBitMap()
+{
+	BITMAPINFOHEADER bitmap_header;
+	InitBitmapHeader(bitmap_header);
+	HDC hdc = GetDC(m_window_info.hwnd);
+	m_window_info.hdc = CreateCompatibleDC(hdc);
+	ReleaseDC(m_window_info.hwnd, hdc);
+	
+	LPVOID ptr;
+	m_window_info.hbitmap = CreateDIBSection(m_window_info.hdc, (BITMAPINFOHEADER*)&bitmap_header, DIB_RGB_COLORS, &ptr, 0, 0);
+	assert(m_window_info.hbitmap != nullptr);
+	
+	m_window_info.old_hbitmap = (HBITMAP)SelectObject(m_window_info.hdc, m_window_info.hbitmap);
+	m_window_info.frame_buffer = (unsigned char*)ptr;
+}
+
+
 
