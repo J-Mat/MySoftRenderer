@@ -2,6 +2,7 @@
 #include "win_platform.h"
 #include "pipeline.h"
 #include "tgaimage.h"
+#include <memory>
 
 const TGAColor Red = TGAColor(255, 0, 0);
 
@@ -29,7 +30,7 @@ public:
 
 	}
 private:
-	unsigned char* m_framebuffer;
+	sharrdo  m_framebuffer;
 };
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
@@ -37,7 +38,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	AllocConsole();
 	SetConsoleTitle("debug console");
 	freopen("CONOUT$", "w", stdout);
-	printf("Hello\r\n");//可以在控制台上输出
 	std::cout << "Hello Zero Real Time Soft Engine!";
 	
 	WindowsParameters windows_parameters = { hInstance, hPrevInstance, pCmdLine, nCmdShow };

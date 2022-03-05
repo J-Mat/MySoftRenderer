@@ -6,6 +6,7 @@ project(ZeroRealTimeSoftRender)
 file(GLOB HEADERS 
     "src/platform/*.h"
     "src/core/*.h"
+    "src/core/glm/*.hpp"
 )
 
 
@@ -18,6 +19,7 @@ file(GLOB SOURCES
 set(INCLUDE
     src/platform
     src/core 
+    src/core/glm
 )
 
 include_directories(${INCLUDE})
