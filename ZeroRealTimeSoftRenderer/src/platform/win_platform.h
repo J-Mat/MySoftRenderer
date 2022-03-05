@@ -1,6 +1,7 @@
 #pragma once
+#include "core.h"
 #include <Windows.h>
-#include "tgaimage.h"
+
 
 
 struct WindowsParameters
@@ -10,6 +11,8 @@ struct WindowsParameters
 	HINSTANCE hPrevInstance;
 	PWSTR pCmdLine;
 	int nCmdShow;
+	int width;
+	int height;
 };
 
 struct WindowInfo
@@ -48,6 +51,7 @@ public:
 	virtual void ShutDown();
 		
 	void DrawWindow(unsigned char* framebuffer); 
+	void DrawWindow(std::shared_ptr<FrameBuffer> framebuffer); 
 private: 
 	int GetBufferIndex(int x, int y) { return (x * m_window_info.width + y) * 4; };
 	void RegisterWindows(const WindowsParameters& windows_parameters);

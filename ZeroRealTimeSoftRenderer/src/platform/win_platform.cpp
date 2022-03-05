@@ -9,8 +9,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 
 void App::Init(const WindowsParameters& windows_parameters)
 {
-	m_window_info.width = Pipeline::WINDOWS_WIDTH;
-	m_window_info.height = Pipeline::WINDOWS_HEIGHT;
+	m_window_info.width = windows_parameters.width;
+	m_window_info.height = windows_parameters.height;
 
 	RegisterWindows(windows_parameters);
 
@@ -51,17 +51,17 @@ void App::ShutDown()
 
 }
 
-
-void App::DrawWindow(unsigned char* framebuffer)
+void App::DrawWindow(std::shared_ptr<FrameBuffer> framebuffer)
 {
 	for (int i = 0; i < m_window_info.height; ++i)
 	{
 		for (int j = 0; j < m_window_info.width; ++j)
 		{
 			int index = GetBufferIndex(i, j);
-			m_window_info.frame_buffer[index] = framebuffer[index];
-			m_window_info.frame_buffer[index + 1] = framebuffer[index + 1];
-			m_window_info.frame_buffer[index + 2] = framebuffer[index + 2];
+			TGAColor color = framebuffer->GetPixel(i, j);
+			m_window_info.frame_buffer[index + 2] = color.bgra[0];
+			m_window_info.frame_buffer[index + 1] = color.bgra[1];
+			m_window_info.frame_buffer[index + 0] = color.bgra[2];
 		}
 	}
 	
@@ -69,7 +69,7 @@ void App::DrawWindow(unsigned char* framebuffer)
 	BitBlt(hdc, 0, 0, m_window_info.width, m_window_info.height, m_window_info.hdc, 0, 0, SRCCOPY);
 	ReleaseDC(m_window_info.hwnd, hdc);
 }
-	
+
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
@@ -122,7 +122,7 @@ void App::InitBitmapHeader(BITMAPINFOHEADER& bitmap_header)
 	memset(&bitmap_header, 0, sizeof(BITMAPINFOHEADER));
 	bitmap_header.biSize = sizeof(BITMAPINFOHEADER);
 	bitmap_header.biWidth = m_window_info.width;
-	bitmap_header.biHeight = -m_window_info.height;
+	bitmap_header.biHeight = m_window_info.height;
 	bitmap_header.biPlanes = 1;
 	bitmap_header.biBitCount = 32;
 	bitmap_header.biCompression = BI_RGB;
