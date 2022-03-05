@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "tgaimage.h"
 
 
 struct WindowsParameters
@@ -22,6 +23,8 @@ struct WindowInfo
 	unsigned int width = 800;
 	unsigned int height = 600;
 	bool is_close = false;
+	char keys[512];
+	char buttons[2];
 };
 
 class App
@@ -36,12 +39,17 @@ public:
 
 	virtual void Init(const WindowsParameters& windows_parameters);
 	
+	virtual void Startup() = 0;
+
 	virtual void Run(App* app);
 	
 	virtual void Render() = 0;
 	
 	virtual void ShutDown();
+		
+	void DrawWindow(unsigned char* framebuffer); 
 private: 
+	int GetBufferIndex(int x, int y) { return (x * m_window_info.width + y) * 4; };
 	void RegisterWindows(const WindowsParameters& windows_parameters);
 	void InitBitMap();
 	void InitBitmapHeader(BITMAPINFOHEADER& bitmap_header);

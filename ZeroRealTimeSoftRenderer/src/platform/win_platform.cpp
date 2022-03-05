@@ -2,22 +2,37 @@
 #include <pipeline.h>
 #include <assert.h>
 #include "iostream"
-using namespace std;
+#include <algorithm>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam);
 
+
 void App::Init(const WindowsParameters& windows_parameters)
 {
-	m_window_info.width = WINDOWS_WIDTH;
-	m_window_info.height = WINDOWS_HEIGHT;
+	m_window_info.width = Pipeline::WINDOWS_WIDTH;
+	m_window_info.height = Pipeline::WINDOWS_HEIGHT;
 
 	RegisterWindows(windows_parameters);
-	RECT rect = { 0, 0, m_window_info.width, m_window_info.height };
 
 	InitBitMap();
 
+	RECT rect = { 0, 0, m_window_info.width, m_window_info.height };
 
-	ShowWindow(m_window_info.hwnd, windows_parameters.nCmdShow);
+	// GetWindowLong 得到窗口原来的属性; AdjustWindowRect调整窗口原来的大小
+	AdjustWindowRect(&rect, GetWindowLong(m_window_info.hwnd, GWL_STYLE), 0);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	int start_x = (width - GetSystemMetrics(SM_CXSIZE));
+	int start_y = (height - GetSystemMetrics(SM_CYSIZE));
+	start_y = max(0, start_y);
+
+	
+	SetWindowPos(m_window_info.hwnd, nullptr, start_x, start_y, width, height, (SWP_NOCOPYBITS | SWP_NOZORDER | SWP_SHOWWINDOW));
+	SetForegroundWindow(m_window_info.hwnd);
+	ShowWindow(m_window_info.hwnd, SW_NORMAL);
+	
+	memset(m_window_info.frame_buffer, 0, m_window_info.width * m_window_info.height * 4);
+	memset(m_window_info.keys, 0, sizeof(char) * 512);
 }
 
 void App::Run(App* app)
@@ -36,6 +51,27 @@ void App::ShutDown()
 
 }
 
+
+void App::DrawWindow(unsigned char* framebuffer)
+{
+	for (int i = 0; i < m_window_info.height; ++i)
+	{
+		for (int j = 0; j < m_window_info.width; ++j)
+		{
+			int index = GetBufferIndex(i, j);
+			m_window_info.frame_buffer[index] = framebuffer[index];
+			m_window_info.frame_buffer[index + 1] = framebuffer[index + 1];
+			m_window_info.frame_buffer[index + 2] = framebuffer[index + 2];
+		}
+	}
+	
+	HDC hdc = GetDC(m_window_info.hwnd);
+	BitBlt(hdc, 0, 0, m_window_info.width, m_window_info.height, m_window_info.hdc, 0, 0, SRCCOPY);
+	ReleaseDC(m_window_info.hwnd, hdc);
+}
+	
+
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -43,6 +79,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
+	case WM_CHAR:
+		return 0; 
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -86,6 +124,9 @@ void App::InitBitmapHeader(BITMAPINFOHEADER& bitmap_header)
 	bitmap_header.biWidth = m_window_info.width;
 	bitmap_header.biHeight = -m_window_info.height;
 	bitmap_header.biPlanes = 1;
+	bitmap_header.biBitCount = 32;
+	bitmap_header.biCompression = BI_RGB;
+	bitmap_header.biSizeImage = m_window_info.width * m_window_info.height * 4;
 }
 
 
@@ -98,9 +139,10 @@ void App::InitBitMap()
 	ReleaseDC(m_window_info.hwnd, hdc);
 	
 	LPVOID ptr;
-	m_window_info.hbitmap = CreateDIBSection(m_window_info.hdc, (BITMAPINFOHEADER*)&bitmap_header, DIB_RGB_COLORS, &ptr, 0, 0);
+	m_window_info.hbitmap = CreateDIBSection(m_window_info.hdc,  (BITMAPINFO*)&bitmap_header, DIB_RGB_COLORS, &ptr, 0, 0);
 	assert(m_window_info.hbitmap != nullptr);
 	
+	// 把新创建的位图句柄写入mem_dc
 	m_window_info.old_hbitmap = (HBITMAP)SelectObject(m_window_info.hdc, m_window_info.hbitmap);
 	m_window_info.frame_buffer = (unsigned char*)ptr;
 }
