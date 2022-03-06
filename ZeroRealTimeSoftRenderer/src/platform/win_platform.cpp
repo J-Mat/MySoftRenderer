@@ -6,6 +6,12 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam);
 
+App* App::s_app = nullptr;
+
+App::App()
+{
+	s_app = this;
+}
 
 void App::Init(const WindowsParameters& windows_parameters)
 {
@@ -32,17 +38,29 @@ void App::Init(const WindowsParameters& windows_parameters)
 	ShowWindow(m_window_info.hwnd, SW_NORMAL);
 	
 	memset(m_window_info.frame_buffer, 0, m_window_info.width * m_window_info.height * 4);
-	memset(m_window_info.keys, 0, sizeof(char) * 512);
+	memset(m_window_info.keys, 0, sizeof(bool) * 0xff);
 }
 
-void App::Run(App* app)
+void App::Run()
 {
+	float last_time = (float)timeGetTime();
+
+	
 	MSG msg = { };
-	while (GetMessage(&msg, NULL, 0, 0))
+	while (msg.message != WM_QUIT)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-		Render();
+		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			float  cur_time = (float)timeGetTime();
+			float delta_time = (cur_time - last_time) * 0.001f;
+			Render(delta_time);  //‰÷»æÕº–Œ
+			last_time = cur_time;
+		}
 	}
 }
 
@@ -62,6 +80,8 @@ void App::DrawWindow(std::shared_ptr<ColorBuffer> framebuffer)
 			m_window_info.frame_buffer[index + 2] = color.bgra[0];
 			m_window_info.frame_buffer[index + 1] = color.bgra[1];
 			m_window_info.frame_buffer[index + 0] = color.bgra[2];
+			
+			m_window_info.frame_buffer[index + 3] = 255;
 		}
 	}
 	
@@ -79,8 +99,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
-	case WM_CHAR:
-		return 0; 
+	case WM_KEYDOWN:
+		//std::cout << (wParam & 0xff) << std::endl;
+		App::GetApp()->GetWindowInfo().keys[wParam & 0xff] = true;
+		return 0;
+	
+	case WM_KEYUP:
+		App::GetApp()->GetWindowInfo().keys[wParam & 0xff] = false;
+		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

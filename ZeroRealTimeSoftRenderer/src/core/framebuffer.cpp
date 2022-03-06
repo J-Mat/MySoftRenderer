@@ -1,25 +1,30 @@
 #include "framebuffer.h"
 #include <iostream>
+#include "assert.h"
 
 FrameBuffer::FrameBuffer(int width, int height, size_t chanel_size, int chanels) :
 	m_width(width),
 	m_height(height),
 	m_chanels(chanels)
 {
-	m_buffer = malloc(chanel_size * m_width * m_height * m_chanels);
-	if (m_buffer != nullptr)
-	{
-		memset(m_buffer, 0, chanel_size * m_width * m_height * m_chanels);
-	}
+	size_t total_size = chanel_size * m_width * m_height * m_chanels;
+	m_buffer = malloc(total_size);
+	assert(m_buffer != nullptr);
+	memset(m_buffer, 0, total_size);
 }
 
 
 
-const TGAColor& ColorBuffer::GetPixel(int x, int y)
+FrameBuffer::~FrameBuffer()
+{
+	delete[] m_buffer;
+}
+
+TGAColor ColorBuffer::GetPixel(int x, int y)
 {
 	int index = GetIndex(x, y);
-	TGAColor color = { USCHAR_BUF(m_buffer)[index],  USCHAR_BUF(m_buffer)[index + 1],  USCHAR_BUF(m_buffer)[index + 2],  USCHAR_BUF(m_buffer)[index + 3] };
-	return std::move(color);
+	TGAColor color = TGAColor(USCHAR_BUF(m_buffer)[index],  USCHAR_BUF(m_buffer)[index + 1],  USCHAR_BUF(m_buffer)[index + 2],  USCHAR_BUF(m_buffer)[index + 3]);
+	return color;
 }
 
 ColorBuffer::ColorBuffer(int width, int height) :
@@ -27,10 +32,6 @@ ColorBuffer::ColorBuffer(int width, int height) :
 {
 }
 
-ColorBuffer::~ColorBuffer()
-{
-	delete[] m_buffer;
-}
 
 void ColorBuffer::ClearColorBuffer(TGAColor color)
 {
@@ -47,7 +48,7 @@ void ColorBuffer::SetPixel(int x, int y, TGAColor color)
 {
 	int index = GetIndex(x, y); 
 	for (int i = 0;i < m_chanels; ++i)
-	{
+	{	
 		USCHAR_BUF(m_buffer)[index + i] = color.bgra[i];
 	}
 }
@@ -55,14 +56,8 @@ void ColorBuffer::SetPixel(int x, int y, TGAColor color)
 ZBuffer::ZBuffer(int width, int height): 
 	FrameBuffer(width, height, sizeof(float), 1)
 {
-	m_buffer = (float*)malloc(sizeof(float) * m_width * m_height * m_chanels);
-	memset(m_buffer, 0, sizeof(float) * m_width * m_height * m_chanels);
 }
 
-ZBuffer::~ZBuffer()
-{
-	delete[] m_buffer;
-}
 
 void ZBuffer::ClearZBuffer()
 {

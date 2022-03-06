@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	virtual void Render()
+	virtual void Render(float delta_time)
 	{
 		m_color_buffer->ClearColorBuffer(RED);
 		std::vector<glm::vec4> pts = { {0, 0, 0, 1}, {0, 400, 0, 1}, {400, 400, 0, 1} };
@@ -29,7 +29,6 @@ public:
 	
 	virtual void ShutDown()
 	{
-
 	}
 private:
 	std::shared_ptr<ColorBuffer>  m_color_buffer;
@@ -49,7 +48,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	app->Init(windows_parameters);
 
-	app->Run(app);
+	app->Run();
 
 	delete app;
 	

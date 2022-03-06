@@ -1,7 +1,7 @@
 #pragma once
 #include "core.h"
 #include <Windows.h>
-
+#pragma comment(lib, "winmm.lib ")
 
 
 struct WindowsParameters
@@ -26,27 +26,29 @@ struct WindowInfo
 	unsigned int width = 800;
 	unsigned int height = 600;
 	bool is_close = false;
-	char keys[512];
+	bool keys[0xff];
 	char buttons[2];
 };
 
 class App
 {
 public:
-	App() = default;
+	App();
 	virtual ~App() = default;
 	
 	static  App* GetApp() { return s_app; }
 
-	const WindowInfo& GetWindowInfo() { return m_window_info; };
+	WindowInfo& GetWindowInfo() { return m_window_info; };
+
+	bool IsKeyDown(char ch) { return m_window_info.keys[ch]; }
 
 	virtual void Init(const WindowsParameters& windows_parameters);
 	
 	virtual void Startup() = 0;
 
-	virtual void Run(App* app);
+	virtual void Run();
 	
-	virtual void Render() = 0;
+	virtual void Render(float delta_time) = 0;
 	
 	virtual void ShutDown();
 		

@@ -5,7 +5,7 @@ class FrameBuffer
 {
 public:
 	FrameBuffer(int width, int height, size_t chanel_size, int chanels);
-	virtual ~FrameBuffer() = default;
+	virtual ~FrameBuffer();
 
 	int GetWidth() const { return m_width; }
 	int GetHeight() const { return m_height; }
@@ -22,18 +22,16 @@ class ColorBuffer :public FrameBuffer
 {
 public:
 	ColorBuffer(int width, int height);
-	virtual ~ColorBuffer();
 
 	void ClearColorBuffer(TGAColor color);
 	void SetPixel(int x, int y, TGAColor color);
-	const TGAColor& GetPixel(int x, int y);
+	TGAColor GetPixel(int x, int y);
 };
 
 class ZBuffer :public FrameBuffer
 {
 public:
 	ZBuffer(int width, int height);
-	virtual ~ZBuffer();
 
 	void ClearZBuffer();
 	void SetValue(int x, int y, float value);

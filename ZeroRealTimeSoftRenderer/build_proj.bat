@@ -1,4 +1,4 @@
-mkdir -p build
+mkdir build
 cd build
 cmake ..
 pause
