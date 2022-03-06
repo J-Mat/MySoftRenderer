@@ -50,8 +50,7 @@ public:
 	
 	virtual void ShutDown();
 		
-	void DrawWindow(unsigned char* framebuffer); 
-	void DrawWindow(std::shared_ptr<FrameBuffer> framebuffer); 
+	void DrawWindow(std::shared_ptr<ColorBuffer> framebuffer); 
 private: 
 	int GetBufferIndex(int x, int y) { return (x * m_window_info.width + y) * 4; };
 	void RegisterWindows(const WindowsParameters& windows_parameters);

@@ -1,6 +1,9 @@
 #pragma once
 #include <fstream>
 
+#define  USCHAR_BUF(buffer) ((unsigned char*)buffer)
+#define  FLOAT_BUF(buffer) ((float*)buffer)
+
 #pragma pack(push,1)
 struct TGA_Header 
 {

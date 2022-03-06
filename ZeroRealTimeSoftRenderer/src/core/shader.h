@@ -1,6 +1,6 @@
 #pragma once
 #include "core.h"
-using namespace glm;
+using namespace Math;
 
 struct light
 {

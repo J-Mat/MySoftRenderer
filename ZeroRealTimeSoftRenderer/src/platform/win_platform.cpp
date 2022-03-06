@@ -51,7 +51,7 @@ void App::ShutDown()
 
 }
 
-void App::DrawWindow(std::shared_ptr<FrameBuffer> framebuffer)
+void App::DrawWindow(std::shared_ptr<ColorBuffer> framebuffer)
 {
 	for (int i = 0; i < m_window_info.height; ++i)
 	{

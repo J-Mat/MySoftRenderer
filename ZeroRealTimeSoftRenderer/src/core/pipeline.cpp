@@ -27,7 +27,7 @@ namespace Pipeline
 		}
 	}
 
-	void DrawTriangle(std::shared_ptr<FrameBuffer> framebuffer, std::vector<glm::vec4>& pts)
+	void DrawTriangle(std::shared_ptr<ColorBuffer> framebuffer, std::vector<glm::vec4>& pts)
 	{
 		ivec2 min_box = { framebuffer->GetWidth() - 1,  framebuffer->GetHeight() - 1};
 		ivec2 max_box = { 0, 0 };

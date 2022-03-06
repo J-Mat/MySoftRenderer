@@ -1,6 +1,6 @@
 #pragma once
 #include "core.h"
-using namespace glm;
+using namespace Math;
 
 typedef struct cubemap cubemap_t; // forward declaration
 

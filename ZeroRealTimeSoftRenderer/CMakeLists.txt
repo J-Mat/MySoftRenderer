@@ -6,6 +6,7 @@ project(ZeroRealTimeSoftRender)
 file(GLOB HEADERS 
     "src/platform/*.h"
     "src/core/*.h"
+    "src/core/*.hpp"
     "src/core/glm/*.hpp"
 )
 

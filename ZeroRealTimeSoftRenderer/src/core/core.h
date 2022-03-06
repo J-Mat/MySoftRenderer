@@ -1,13 +1,16 @@
 #pragma once 
 
 
+//#include "math.hpp"
 #include <memory>
 #include <vector>
 #include <iostream>
 #include <string>
-#include "math.h"
 #include "framebuffer.h"
 #include "tgaimage.h"
+#include "math_ext.h"
+
+
 
 
 #define RED TGAColor(255, 0, 0)
