@@ -1,21 +1,19 @@
 #include "pipeline.h"
 
-namespace Pipeline
+vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P)
 {
-	vec3 GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P)
+	vec3 x_vec = { B.x - A.x, C.x - A.x, A.x - P.x };
+	vec3 y_vec = { B.y - A.y, C.y - A.y, A.y - P.y };
+	vec3 s = glm::cross(x_vec, y_vec);
+	if (std::abs(s.z) > 1e-8)
 	{
-		vec3 x_vec = { B.x - A.x, C.x - A.x, A.x - P.x };
-		vec3 y_vec = { B.y - A.y, C.y - A.y, A.y - P.y };
-		vec3 s = glm::cross(x_vec, y_vec);
-		if (std::abs(s.z) > 1e-8)
-		{
-			s = { s.x / s.z, s.y / s.z, 1.0f };
-			return  { 1.0f - (s.x + s.y), s.x, s.y };
-		}
-		return { -1, 1, 1 };
+		s = { s.x / s.z, s.y / s.z, 1.0f };
+		return  { 1.0f - (s.x + s.y), s.x, s.y };
 	}
+	return { -1, 1, 1 };
+}
 
-	void GetBoundingBox(ivec2& min_box, ivec2& max_box, std::vector<vec4>& pts)
+	void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box, std::vector<vec4>& pts)
 	{
 		for (glm::vec4 pt : pts)
 		{
@@ -27,7 +25,7 @@ namespace Pipeline
 		}
 	}
 
-	void DrawTriangle(std::shared_ptr<ColorBuffer> framebuffer, std::vector<glm::vec4>& pts)
+	void  Pipeline::DrawTriangle(std::shared_ptr<ColorBuffer> framebuffer, std::vector<glm::vec4>& pts)
 	{
 		ivec2 min_box = { framebuffer->GetWidth() - 1,  framebuffer->GetHeight() - 1};
 		ivec2 max_box = { 0, 0 };
@@ -48,5 +46,3 @@ namespace Pipeline
 		}
 	}
 
-
-};

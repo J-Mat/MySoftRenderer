@@ -3,6 +3,8 @@
 #include <Windows.h>
 #pragma comment(lib, "winmm.lib ")
 
+using namespace Math;
+
 
 struct WindowsParameters
 {
@@ -27,7 +29,7 @@ struct WindowInfo
 	unsigned int height = 600;
 	bool is_close = false;
 	bool keys[0xff];
-	char buttons[2];
+	char buttons[3];
 };
 
 class App
@@ -39,8 +41,6 @@ public:
 	static  App* GetApp() { return s_app; }
 
 	WindowInfo& GetWindowInfo() { return m_window_info; };
-
-	bool IsKeyDown(char ch) { return m_window_info.keys[ch]; }
 
 	virtual void Init(const WindowsParameters& windows_parameters);
 	
@@ -58,6 +58,7 @@ private:
 	void RegisterWindows(const WindowsParameters& windows_parameters);
 	void InitBitMap();
 	void InitBitmapHeader(BITMAPINFOHEADER& bitmap_header);
+	vec2 GetMousePos();
 private: 
 	static App* s_app;
 	WindowInfo m_window_info;

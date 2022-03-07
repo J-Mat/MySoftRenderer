@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "iostream"
 #include <algorithm>
+using namespace std;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam);
 
@@ -99,13 +100,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
-	case WM_KEYDOWN:
-		//std::cout << (wParam & 0xff) << std::endl;
-		App::GetApp()->GetWindowInfo().keys[wParam & 0xff] = true;
-		return 0;
-	
-	case WM_KEYUP:
-		App::GetApp()->GetWindowInfo().keys[wParam & 0xff] = false;
+	case WM_MOUSEMOVE:
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
+		Input::SetMousePos(x, y);
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -155,6 +153,14 @@ void App::InitBitmapHeader(BITMAPINFOHEADER& bitmap_header)
 	bitmap_header.biSizeImage = m_window_info.width * m_window_info.height * 4;
 }
 
+
+vec2 App::GetMousePos()
+{
+	POINT point;
+	GetCursorPos(&point);
+	ScreenToClient(m_window_info.hwnd, &point); // 从屏幕空间转到窗口空间
+	return vec2((float)point.x, (float)point.y);
+}
 
 void App::InitBitMap()
 {
