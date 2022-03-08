@@ -21,3 +21,12 @@ vec2 Input::GetMouseOffset()
 	
 	return vec2(x_offset, y_offset);
 }
+
+void Input::SetMousePos(int x, int y)
+{
+	s_last_x = s_cur_x;
+	s_last_y = s_cur_y;
+	
+	s_cur_x = x;
+	s_cur_y = y;
+}

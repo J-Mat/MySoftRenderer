@@ -25,13 +25,5 @@ private:
 	static int s_last_y;
 };
 
-void Input::SetMousePos(int x, int y)
-{
-	s_last_x = s_cur_x;
-	s_last_y = s_cur_y;
-	
-	s_cur_x = x;
-	s_cur_y = y;
-}
 
 

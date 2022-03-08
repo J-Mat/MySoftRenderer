@@ -8,6 +8,7 @@ file(GLOB HEADERS
     "src/core/*.h"
     "src/core/*.hpp"
     "src/core/glm/*.hpp"
+    "src/shader/*.h"
 )
 
 
@@ -15,10 +16,11 @@ file(GLOB SOURCES
     "src/platform/*.cpp"
     "src/core/*.cpp"
     "src/main.cpp"
+    "src/shader/*.cpp"
 )
 
 set(INCLUDE
-    src/platform
+    src
     src/core 
     src/core/glm
 )

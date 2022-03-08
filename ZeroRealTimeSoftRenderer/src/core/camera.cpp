@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "input.h"
+
 Camera::Camera(CameraType camera_type, vec3 eye, vec3 lookat, vec3 up, float speed /*= SPEED*/, float mouse_sensitivity /*= SENSITIVITY*/) :
 	m_type(camera_type),
 	m_eye(eye),

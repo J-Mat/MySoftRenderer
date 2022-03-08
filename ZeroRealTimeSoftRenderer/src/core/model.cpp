@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "shader.h"
+#include "shader/shader.h"
 
 Model::Model(const char *filename, int is_skybox, int is_from_mmd)
 	: is_skybox(is_skybox), is_from_mmd(is_from_mmd)

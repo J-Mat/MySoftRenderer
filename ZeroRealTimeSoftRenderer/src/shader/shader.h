@@ -1,5 +1,5 @@
-#pragma once
-#include "core.h"
+#include "tgaimage.h"
+#include "math_ext.h"
 using namespace Math;
 
 struct light

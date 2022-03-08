@@ -1,5 +1,6 @@
 #pragma once
-#include "core.h"
+
+#include "math_ext.h"
 using namespace Math;
 
 enum CameraType

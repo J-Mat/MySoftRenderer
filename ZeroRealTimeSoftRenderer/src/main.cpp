@@ -1,6 +1,6 @@
 #include "core.h"
 #include "pipeline.h"
-#include "win_platform.h"
+#include "platform/win_platform.h"
 
 
 const int g_windows_width = 800;
