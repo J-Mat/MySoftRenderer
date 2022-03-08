@@ -12,8 +12,6 @@ Camera::Camera(CameraType camera_type, vec3 eye, vec3 lookat, vec3 up, float spe
 	m_forward = normalize(m_lookat - m_eye);
 	m_right = normalize(Math::cross(m_forward, m_up));
 	m_up = normalize(Math::cross(m_right, m_forward));
-	
-	
 }
 
 
@@ -37,17 +35,18 @@ void Camera::ProcessKeyboard(float delta_time)
 }
 
 void Camera::ProcessMouseMovement(float delta_time)
-{	
+{
 	vec2 mouse_offset = Input::GetMouseOffset() * m_mouse_sensitivity;
-	
-	m_pitch += mouse_offset.x;
-	m_yaw += mouse_offset.y;
-	
-	m_pitch = Math::clamp(m_pitch, -89.0f, 89.0f);
 
+	// 加 0 是对向量操作，  加 1 是对点操作
+	mat4 yaw_mat = mat4(1.0f);
+	yaw_mat = Math::rotate(yaw_mat, Math::radians(mouse_offset.x), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_forward = yaw_mat * vec4(m_forward, 0.0f);
 
-	m_forward.x = cos(Math::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	m_forward.y = sin(Math::radians(m_pitch));
-	m_forward.z = sin(Math::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	mat4 pitch_mat = mat4(1.0f);
+	pitch_mat = Math::rotate(pitch_mat, Math::radians(mouse_offset.y), m_right);
+	m_forward = pitch_mat * vec4(m_forward, 0.0f);
+	// 对picth的角度进行限制
+	m_forward.y = Math::clamp(m_forward.y, -0.9f, +0.9f);
+	m_forward = Math::normalize(m_forward);
 }
-

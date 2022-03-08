@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "iostream"
 #include <algorithm>
+#include "input.h"
 using namespace std;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam);

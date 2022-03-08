@@ -15,7 +15,7 @@ class Input
 {
 public:
 	static bool IsKeyPressed(char key);
-	static void GetMouseMovment(float& x_offset, float& y_offset);
+	static vec2 GetMouseOffset();
 	static void SetMousePos(int x, int y);
 
 private: 
