@@ -2,7 +2,7 @@
 
 #include "core.h"
 #include "camera.h"
-#include "model.h"
+#include "mesh.h"
 #include "shader/shader.h"
 using namespace  Math;
 
@@ -20,7 +20,7 @@ public:
 
 private:
 	std::shared_ptr<Camera>  m_camera;
-	std::vector<std::shared_ptr<Model>> m_models;
+	std::vector<std::shared_ptr<Mesh>> m_models;
 };
 
 class Scene_HelloTriangle : public Scene 

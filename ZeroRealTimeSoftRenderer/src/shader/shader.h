@@ -1,5 +1,5 @@
 #pragma once
-#include "model.h"
+#include "mesh.h"
 #include "framebuffer.h"
 using namespace Math;
 
@@ -11,7 +11,7 @@ struct light
 
 typedef struct cubemap
 {
-	TGAImage* faces[6];
+	TGAImage* m_faces[6];
 }cubemap_t;
 
 typedef struct iblmap
@@ -45,11 +45,11 @@ public:
 	Uniform m_uniform;
 	Attribute m_attribute;
 	Color frag_color;
-	std::shared_ptr<Model> m_attach_model;
+	std::shared_ptr<Mesh> m_attach_model;
 	std::shared_ptr<ColorBuffer> m_color_framebuffer;
 	std::shared_ptr<ZBuffer> m_z_framebuffer;
-	virtual void vertex_shader(int nfaces, int nvertex) {}
-	virtual bool fragment_shader(float alpha, float beta, float gamma) { return true; }
+	virtual void VertexShader(int nfaces, int nvertex) {}
+	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }
 	
 	template <typename T>
 	static T GetBarycentricValue(const T* values, float alpha, float beta, float gamma)
@@ -61,9 +61,8 @@ public:
 class Shader_HelloTriangle : public IShader
 {
 public:
-	Shader_HelloTriangle() = default;
-	virtual void vertex_shader(int face_idx, int vetex_idx);
-	virtual bool fragment_shader(float alpha, float beta, float gamma);
+	virtual void VertexShader(int face_idx, int vetex_idx);
+	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
 
 

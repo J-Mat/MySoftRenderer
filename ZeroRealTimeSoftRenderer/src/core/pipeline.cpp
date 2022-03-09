@@ -43,7 +43,7 @@ vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const
 					continue;
 				}
 				float z_P = (pts[0][2] / pts[0][3]) * barycentric_coord.x + (pts[0][2] / pts[1][3]) * barycentric_coord.y + (pts[0][2] / pts[2][3]) * barycentric_coord.z;
-				if (shader->fragment_shader(barycentric_coord.x, barycentric_coord.y, barycentric_coord.z))
+				if (shader->FragmentShader(barycentric_coord.x, barycentric_coord.y, barycentric_coord.z))
 				{
 					framebuffer->SetPixel(x, y, shader->frag_color);
 				}

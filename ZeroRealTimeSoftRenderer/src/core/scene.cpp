@@ -28,9 +28,9 @@ void Scene_HelloTriangle::GenerateScene(std::shared_ptr<ColorBuffer> color_buffe
 
 void Scene_HelloTriangle::Render(float delta_time)
 {
-	m_shader->vertex_shader(0, 0);
-	m_shader->vertex_shader(0, 1);
-	m_shader->vertex_shader(0, 2);
+	m_shader->VertexShader(0, 0);
+	m_shader->VertexShader(0, 1);
+	m_shader->VertexShader(0, 2);
 	auto* test = m_shader->m_attribute.screen_coord;
 	vec4 pts[3];
 	for (int i = 0; i < 3; ++i)
