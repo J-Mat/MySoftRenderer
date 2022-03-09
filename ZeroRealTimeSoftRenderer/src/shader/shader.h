@@ -65,5 +65,12 @@ public:
 	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
 
+class Shader_Model : public IShader
+{
+public:
+	virtual void VertexShader(int face_idx, int vetex_idx);
+	virtual bool FragmentShader(float alpha, float beta, float gamma);
+};
+
 
 

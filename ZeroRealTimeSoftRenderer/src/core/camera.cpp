@@ -1,20 +1,19 @@
 #include "camera.h"
 #include "input.h"
 
-Camera::Camera(CameraType camera_type, vec3 eye, vec3 lookat, vec3 up, float speed /*= SPEED*/, float mouse_sensitivity /*= SENSITIVITY*/) :
-	m_type(camera_type),
-	m_eye(eye),
-	m_lookat(lookat),
-	m_world_up(up),
+
+Camera::Camera(CameraSettings& settings, float speed, float mouse_sensitivity) :
+	m_settings(settings),
 	m_speed(speed),
-	m_mouse_sensitivity(mouse_sensitivity)
-	
-{	
+	m_mouse_sensitivity(mouse_sensitivity),
+	m_project_mat(mat4(1.0f)),
+	m_view_mat(mat4(1.0f))
+{
 	m_forward = normalize(m_lookat - m_eye);
 	m_right = normalize(Math::cross(m_forward, m_up));
 	m_up = normalize(Math::cross(m_right, m_forward));
+	m_project_mat = 
 }
-
 
 void Camera::UpdateCamera(float delta_time)
 {
@@ -50,4 +49,11 @@ void Camera::ProcessMouseMovement(float delta_time)
 	// 对picth的角度进行限制
 	m_forward.y = Math::clamp(m_forward.y, -0.9f, +0.9f);
 	m_forward = Math::normalize(m_forward);
+}
+
+mat4 Camera::GetMVPMat()
+{
+	vec3 target = m_eye + m_forward;
+	Math::GetLookAtMat(m_eye, target, m_world_up);
+	Math::GetPerspectMat
 }

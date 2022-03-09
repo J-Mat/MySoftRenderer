@@ -16,3 +16,12 @@ bool Shader_HelloTriangle::FragmentShader(float alpha, float beta, float gamma)
 	frag_color = GetBarycentricValue<Color>(m_attribute.colors, alpha, beta, gamma);
 	return true;
 }
+
+void Shader_Model::VertexShader(int face_idx, int vetex_idx)
+{
+}
+
+bool Shader_Model::FragmentShader(float alpha, float beta, float gamma)
+{
+	return false;
+}

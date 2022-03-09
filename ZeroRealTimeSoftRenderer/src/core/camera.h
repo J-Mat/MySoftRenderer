@@ -12,15 +12,23 @@ enum CameraType
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
 
+struct CameraSettings
+{
+	float fovy;
+	float aspect;
+	vec3 world_up;
+	CameraType camera_type;
+};
+
 class Camera
 {
 public:
-	Camera(CameraType camera_type, vec3 eye, vec3 lookat, vec3 up, float speed = SPEED, float m_mouse_sensitivity = SENSITIVITY);
+	Camera(CameraSettings& settings, float speed = SPEED, float m_mouse_sensitivity = SENSITIVITY);
 	~Camera() = default;
 	
 	void UpdateCamera(float delta_time);
 private:
-	CameraType m_type;
+	CameraSettings m_settings;
 	vec3 m_eye;
 	vec3 m_lookat;
 	vec3 m_forward;	
@@ -34,4 +42,9 @@ private:
 private:
 	void ProcessKeyboard(float delta_time);
 	void ProcessMouseMovement(float delta_time);
+	mat4 GetMVPMat();
+public:
+	mat4 GetViewMat() { return m_view_mat; }
+	mat4 GetProjectMat() { return m_project_mat; }
+	mat4 GetProjectViewMat() { return m_project_mat * m_view_mat; }
 };

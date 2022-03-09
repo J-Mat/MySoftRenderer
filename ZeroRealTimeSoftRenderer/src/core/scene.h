@@ -18,15 +18,14 @@ public:
 		std::shared_ptr<ZBuffer> m_z_buffer) = 0;
 	virtual void Render(float delta_time) = 0;
 
-private:
-	std::shared_ptr<Camera>  m_camera;
-	std::vector<std::shared_ptr<Mesh>> m_models;
+protected:
+	std::shared_ptr<Camera>  m_main_camera;
+	std::vector<std::shared_ptr<Mesh>> m_meshes;
 };
 
 class Scene_HelloTriangle : public Scene 
 {
 public:
-	Scene_HelloTriangle();
 	virtual void GenerateScene(
 		std::shared_ptr<ColorBuffer> color_buffer,
 		std::shared_ptr<ZBuffer> m_z_buffer);
@@ -35,3 +34,12 @@ private:
 	std::shared_ptr<Shader_HelloTriangle> m_shader;
 };
 
+class Scene_Model : public Scene
+{
+	virtual void GenerateScene(
+		std::shared_ptr<ColorBuffer> color_buffer,
+		std::shared_ptr<ZBuffer> m_z_buffer);
+	virtual void Render(float delta_time);
+private:
+	std::shared_ptr<Shader_HelloTriangle> m_shader;
+};
