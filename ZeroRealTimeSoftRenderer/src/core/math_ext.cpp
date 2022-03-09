@@ -99,6 +99,11 @@ namespace Math
 		
 		return m;
 	}
+	vec2 GetSreenCoord(int screen_width, int screen_height, vec3 ndc_coord)
+	{	
+		return { (ndc_coord.x / 2.0 + 0.5) * screen_width,
+				 (ndc_coord.y / 2.0 + 0.5)* screen_height };
+	}
 };
 
 

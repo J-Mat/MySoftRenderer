@@ -14,5 +14,6 @@
 
 
 
-#define RED TGAColor(255, 0, 0)
-#define BLUE TGAColor(0, 0, 255)
+#define RED Color(1.0f, 0.0f, 0.0f, 1.0f)
+#define GREEN Color(0.0f, 1.0f, 0.0f, 0.0f)
+#define BLUE Color(0.0f, 0.0f, 1.0f, 1.0f)

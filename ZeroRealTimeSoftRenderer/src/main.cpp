@@ -1,4 +1,5 @@
 #include "core.h"
+#include "scene.h"
 #include "pipeline.h"
 #include "platform/win_platform.h"
 
@@ -17,20 +18,28 @@ public:
 
 	virtual void Startup()
 	{
+		m_scene = std::make_shared<Scene_HelloTriangle>();
+		m_scene->GenerateScene(m_color_buffer, m_z_buffer);
 	}
 
 	virtual void Render(float delta_time)
 	{
-		m_color_buffer->ClearColorBuffer(RED);
-		std::vector<glm::vec4> pts = { {0, 0, 0, 1}, {0, 400, 0, 1}, {400, 400, 0, 1} };
-		Pipeline::DrawTriangle(m_color_buffer, pts);
+		
+		m_color_buffer->ClearColorBuffer({0.0f, 0.0f, 0.0f, 1.0f});
+		m_scene->Render(delta_time);
 		DrawWindow(m_color_buffer);
+
+
+		//vec4 pts[3] = {{0, 0, 0, 1}, {100, 0, 0, 1}, {100, 100, 0, 1}};
+		//Pipeline::DrawTriangle(m_color_buffer, pts);
+		//DrawWindow(m_color_buffer);
 	}
 	
 	virtual void ShutDown()
 	{
 	}
 private:
+	std::shared_ptr<Scene> m_scene;
 	std::shared_ptr<ColorBuffer>  m_color_buffer;
 	std::shared_ptr<ZBuffer> m_z_buffer;
 };
@@ -47,6 +56,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		
 
 	app->Init(windows_parameters);
+
+	app->Startup();
 
 	app->Run();
 

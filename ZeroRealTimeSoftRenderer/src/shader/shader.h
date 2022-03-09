@@ -1,5 +1,6 @@
-#include "tgaimage.h"
-#include "core.h"
+#pragma once
+#include "model.h"
+#include "framebuffer.h"
 using namespace Math;
 
 struct light
@@ -29,13 +30,41 @@ struct Uniform
 	mat4 mvp_mat;
 };
 
+struct Attribute
+{
+	vec4 vertexes[3]; // NDC
+	ivec2 screen_coord[3];
+	Color colors[3];
+	vec3 normals[3];
+};
+
 class IShader
 {
 public:
+	static ivec2 GetSreenCoord(std::shared_ptr<FrameBuffer> buffer, vec4 ndc_coord);
 	Uniform m_uniform;
+	Attribute m_attribute;
+	Color frag_color;
 	std::shared_ptr<Model> m_attach_model;
+	std::shared_ptr<ColorBuffer> m_color_framebuffer;
+	std::shared_ptr<ZBuffer> m_z_framebuffer;
 	virtual void vertex_shader(int nfaces, int nvertex) {}
-	virtual vec3 fragment_shader(float alpha, float beta, float gamma) { return vec3(1, 1, 1); }
+	virtual bool fragment_shader(float alpha, float beta, float gamma) { return true; }
+	
+	template <typename T>
+	static T GetBarycentricValue(const T* values, float alpha, float beta, float gamma)
+	{
+		return values[0] * alpha + values[1] * beta + values[2] * gamma;
+	}
 };
+
+class Shader_HelloTriangle : public IShader
+{
+public:
+	Shader_HelloTriangle() = default;
+	virtual void vertex_shader(int face_idx, int vetex_idx);
+	virtual bool fragment_shader(float alpha, float beta, float gamma);
+};
+
 
 

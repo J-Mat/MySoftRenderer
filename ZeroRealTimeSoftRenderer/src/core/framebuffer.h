@@ -1,5 +1,9 @@
 #pragma once
 #include "tgaimage.h"
+#include "math_ext.h"
+using namespace Math;
+
+#define  FLOAT_BUF(buffer) ((float*)buffer)
 
 class FrameBuffer
 {
@@ -23,9 +27,9 @@ class ColorBuffer :public FrameBuffer
 public:
 	ColorBuffer(int width, int height);
 
-	void ClearColorBuffer(TGAColor color);
-	void SetPixel(int x, int y, TGAColor color);
-	TGAColor GetPixel(int x, int y);
+	void ClearColorBuffer(Color color);
+	void SetPixel(int x, int y, Color color);
+	Color GetPixel(int x, int y);
 };
 
 class ZBuffer :public FrameBuffer

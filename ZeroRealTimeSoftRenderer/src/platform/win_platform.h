@@ -41,6 +41,8 @@ public:
 	static  App* GetApp() { return s_app; }
 
 	WindowInfo& GetWindowInfo() { return m_window_info; };
+	
+	ivec2 GetWindowsSize() { return { m_window_info.width, m_window_info.height }; }
 
 	virtual void Init(const WindowsParameters& windows_parameters);
 	

@@ -78,10 +78,10 @@ void App::DrawWindow(std::shared_ptr<ColorBuffer> framebuffer)
 		for (int j = 0; j < m_window_info.width; ++j)
 		{
 			int index = GetBufferIndex(i, j);
-			TGAColor color = framebuffer->GetPixel(i, j);
-			m_window_info.frame_buffer[index + 2] = color.bgra[0];
-			m_window_info.frame_buffer[index + 1] = color.bgra[1];
-			m_window_info.frame_buffer[index + 0] = color.bgra[2];
+			Color color = framebuffer->GetPixel(i, j);
+			m_window_info.frame_buffer[index + 2] = color[0] * 255;
+			m_window_info.frame_buffer[index + 1] = color[1] * 255;
+			m_window_info.frame_buffer[index + 0] = color[2] * 255;
 			
 			m_window_info.frame_buffer[index + 3] = 255;
 		}

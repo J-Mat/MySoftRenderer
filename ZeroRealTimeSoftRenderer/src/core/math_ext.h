@@ -7,6 +7,7 @@
 namespace Math
 {
 	using namespace glm;
+	using Color = vec4;
 	// http://www.songho.ca/opengl/gl_camera.html
 	mat4 GetLookAtMat(vec3 eye, vec3 target, vec3 up);
 /*
@@ -29,6 +30,8 @@ namespace Math
  * note: my implementation is based on right-handed system, so it is a little different
  */
 	mat4 GetPerspectMat(float fovy, float aspect, float near, float far);
+	
+	vec2 GetSreenCoord(int screen_width, int screen_height, vec3 ndc_coord);
 };
 
 

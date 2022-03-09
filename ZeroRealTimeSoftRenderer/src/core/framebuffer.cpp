@@ -20,20 +20,20 @@ FrameBuffer::~FrameBuffer()
 	delete[] m_buffer;
 }
 
-TGAColor ColorBuffer::GetPixel(int x, int y)
+Color ColorBuffer::GetPixel(int x, int y)
 {
 	int index = GetIndex(x, y);
-	TGAColor color = TGAColor(USCHAR_BUF(m_buffer)[index],  USCHAR_BUF(m_buffer)[index + 1],  USCHAR_BUF(m_buffer)[index + 2],  USCHAR_BUF(m_buffer)[index + 3]);
+	Color color = Color(FLOAT_BUF(m_buffer)[index], FLOAT_BUF(m_buffer)[index + 1], FLOAT_BUF(m_buffer)[index + 2], FLOAT_BUF(m_buffer)[index + 3]);
 	return color;
 }
 
 ColorBuffer::ColorBuffer(int width, int height) :
-	FrameBuffer(width, height, sizeof(unsigned char), 4)
+	FrameBuffer(width, height, sizeof(float), 4)
 {
 }
 
 
-void ColorBuffer::ClearColorBuffer(TGAColor color)
+void ColorBuffer::ClearColorBuffer(Color color)
 {
 	for (int i = 0; i < m_height; ++i)
 	{
@@ -44,12 +44,12 @@ void ColorBuffer::ClearColorBuffer(TGAColor color)
 	}
 }
 
-void ColorBuffer::SetPixel(int x, int y, TGAColor color)
+void ColorBuffer::SetPixel(int x, int y, Color color)
 {
 	int index = GetIndex(x, y); 
 	for (int i = 0;i < m_chanels; ++i)
 	{	
-		USCHAR_BUF(m_buffer)[index + i] = color.bgra[i];
+		FLOAT_BUF(m_buffer)[index + i] = color[i];
 	}
 }
 
