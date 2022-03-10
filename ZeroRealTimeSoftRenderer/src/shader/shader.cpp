@@ -1,27 +1,34 @@
 #include "shader.h"
+#include "pipeline.h"
 
-ivec2 IShader::GetSreenCoord(std::shared_ptr<FrameBuffer> buffer, vec4 ndc_coord)
+#define GET_BA_VALUE(type, values)  GetBarycentricValue<type>(values, alpha, beta, gamma)
+
+void IShader::NDC2ScreenCoord()
 {
-	return { (ndc_coord.y / 2.0 + 0.5) * buffer->GetHeight(),
-			 (ndc_coord.x / 2.0 + 0.5) * buffer->GetWidth()};
+	for (int i = 0; i < 3; ++i)
+	{
+		m_attribute.screen_coord[i] = Pipeline::GetSreenCoord(m_attribute.ndc_coord[i]);
+	}
 }
 
-void Shader_HelloTriangle::VertexShader(int face_idx, int vertex_idx)
+void Shader_HelloTriangle::VertexShader(int vertex_idx)
 {
-	m_attribute.screen_coord[vertex_idx] = GetSreenCoord(m_color_framebuffer, m_attribute.vertexes[vertex_idx]);
 }
 
 bool Shader_HelloTriangle::FragmentShader(float alpha, float beta, float gamma)
 {
-	frag_color = GetBarycentricValue<Color>(m_attribute.colors, alpha, beta, gamma);
+	frag_color = GET_BA_VALUE(Color, m_attribute.colors);
 	return true;
 }
 
-void Shader_Model::VertexShader(int face_idx, int vetex_idx)
-{
+void Shader_Model::VertexShader(int vertex_idx)
+{	
+	// MVP
+	m_attribute.ndc_coord[vertex_idx] = m_uniform.perspect_mat * m_uniform.view_mat * vec4(m_attribute.pos[vertex_idx], 1.0);
 }
 
 bool Shader_Model::FragmentShader(float alpha, float beta, float gamma)
 {
-	return false;
+	return true;
 }
+

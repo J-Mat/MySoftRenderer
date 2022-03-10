@@ -19,6 +19,7 @@ private:
 public:
 	Mesh(const char *filename, int is_skybox = 0, int is_from_mmd = 0);
 	~Mesh();
+	
 	//skybox
 	cubemap_t *m_environment_map;
 	int is_skybox;
@@ -50,3 +51,4 @@ public:
 
 	std::vector<int> Face(int idx);
 };
+

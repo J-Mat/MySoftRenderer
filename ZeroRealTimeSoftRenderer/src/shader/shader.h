@@ -27,12 +27,12 @@ struct Uniform
 	mat4 model_mat;
 	mat4 view_mat;
 	mat4 perspect_mat;
-	mat4 mvp_mat;
 };
 
 struct Attribute
 {
-	vec4 vertexes[3]; // NDC
+	vec3 pos[3];
+	vec4 ndc_coord[3]; // NDC
 	ivec2 screen_coord[3];
 	Color colors[3];
 	vec3 normals[3];
@@ -41,14 +41,11 @@ struct Attribute
 class IShader
 {
 public:
-	static ivec2 GetSreenCoord(std::shared_ptr<FrameBuffer> buffer, vec4 ndc_coord);
 	Uniform m_uniform;
 	Attribute m_attribute;
 	Color frag_color;
-	std::shared_ptr<Mesh> m_attach_model;
-	std::shared_ptr<ColorBuffer> m_color_framebuffer;
-	std::shared_ptr<ZBuffer> m_z_framebuffer;
-	virtual void VertexShader(int nfaces, int nvertex) {}
+	virtual void VertexShader(int nvertex) {}
+	virtual void NDC2ScreenCoord();
 	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }
 	
 	template <typename T>
@@ -61,14 +58,14 @@ public:
 class Shader_HelloTriangle : public IShader
 {
 public:
-	virtual void VertexShader(int face_idx, int vetex_idx);
+	virtual void VertexShader(int vetex_idx);
 	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
 
 class Shader_Model : public IShader
 {
 public:
-	virtual void VertexShader(int face_idx, int vetex_idx);
+	virtual void VertexShader(int vetex_idx);
 	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
 

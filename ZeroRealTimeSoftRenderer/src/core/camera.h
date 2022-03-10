@@ -14,18 +14,28 @@ const float SENSITIVITY = 0.1f;
 
 struct CameraSettings
 {
-	float fovy;
-	float aspect;
-	vec3 world_up;
-	CameraType camera_type;
+	CameraSettings() = default;
+	float fovy = 60.0f;
+	float aspect = 4.0f / 3.0f;
+	vec3 world_up = {0.0f, 1.0f, 0.0f};
+	float speed = SPEED;
+	float mouse_sensivity = SENSITIVITY;
+	CameraType camera_type =  CameraType::CT_PERSPECT;
+	
+	float near = 0.1f;
+	float far = 10000.0f;
+	float left = 0.0f;
+	float right = 0.0f;
+	float bottom = 0.0f;
+	float top = 0.0f;
 };
 
 class Camera
 {
 public:
-	Camera(CameraSettings& settings, float speed = SPEED, float m_mouse_sensitivity = SENSITIVITY);
+	Camera(CameraSettings& settings);
 	~Camera() = default;
-	
+	void Init(vec3 eye, vec3 lookat);
 	void UpdateCamera(float delta_time);
 private:
 	CameraSettings m_settings;
@@ -34,15 +44,13 @@ private:
 	vec3 m_forward;	
 	vec3 m_right;
 	vec3 m_up;
-	vec3 m_world_up;
-	float m_speed;
-	float m_mouse_sensitivity;
 	mat4 m_view_mat;
 	mat4 m_project_mat;
+	mat4 m_project_view_mat;
 private:
+	void UpdateMat();
 	void ProcessKeyboard(float delta_time);
 	void ProcessMouseMovement(float delta_time);
-	mat4 GetMVPMat();
 public:
 	mat4 GetViewMat() { return m_view_mat; }
 	mat4 GetProjectMat() { return m_project_mat; }

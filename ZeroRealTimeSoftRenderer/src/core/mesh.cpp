@@ -1,4 +1,4 @@
-#include "model.h"
+#include "mesh.h"
 
 #include <io.h> 
 #include <fstream>

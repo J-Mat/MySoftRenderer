@@ -6,7 +6,6 @@
 #include "shader/shader.h"
 using namespace  Math;
 
-
 class Scene
 {
 public:
@@ -15,7 +14,7 @@ public:
 	
 	virtual void GenerateScene(
 		std::shared_ptr<ColorBuffer> color_buffer,
-		std::shared_ptr<ZBuffer> m_z_buffer) = 0;
+		std::shared_ptr<ZBuffer> z_buffer) = 0;
 	virtual void Render(float delta_time) = 0;
 
 protected:
@@ -28,7 +27,7 @@ class Scene_HelloTriangle : public Scene
 public:
 	virtual void GenerateScene(
 		std::shared_ptr<ColorBuffer> color_buffer,
-		std::shared_ptr<ZBuffer> m_z_buffer);
+		std::shared_ptr<ZBuffer> z_buffer);
 	virtual void Render(float delta_time);
 private:
 	std::shared_ptr<Shader_HelloTriangle> m_shader;
@@ -36,9 +35,10 @@ private:
 
 class Scene_Model : public Scene
 {
+public:
 	virtual void GenerateScene(
 		std::shared_ptr<ColorBuffer> color_buffer,
-		std::shared_ptr<ZBuffer> m_z_buffer);
+		std::shared_ptr<ZBuffer> z_buffer);
 	virtual void Render(float delta_time);
 private:
 	std::shared_ptr<Shader_HelloTriangle> m_shader;
