@@ -24,15 +24,9 @@ public:
 
 	virtual void Render(float delta_time)
 	{
-		
 		m_color_buffer->ClearColorBuffer({0.0f, 0.0f, 0.0f, 1.0f});
 		m_scene->Render(delta_time);
 		DrawWindow(m_color_buffer);
-
-
-		//vec4 pts[3] = {{0, 0, 0, 1}, {100, 0, 0, 1}, {100, 100, 0, 1}};
-		//Pipeline::RunFragmentStage(m_color_buffer, pts);
-		//DrawWindow(m_color_buffer);
 	}
 	
 	virtual void ShutDown()

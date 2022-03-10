@@ -22,7 +22,6 @@ public:
 	static vec3 GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P);
 	static void GetBoundingBox(ivec2& min_box, ivec2& max_box);
 	static void RunFragmentStage(); // »­Èý½ÇÐÎ
-	static void DrawTriangles();
 private:
 	static std::shared_ptr<ColorBuffer> s_color_buffer;
 	static std::shared_ptr<ZBuffer> s_zbuffer;

@@ -12,6 +12,7 @@ ivec2 Pipeline::GetSreenCoord(vec4 ndc_coord)
 			 (ndc_coord.x / ndc_coord.w / 2.0 + 0.5) * s_color_buffer->GetWidth()};
 }
 
+
 vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P)
 {
 	vec3 x_vec = { B.x - A.x, C.x - A.x, A.x - P.x };
@@ -55,6 +56,14 @@ void Pipeline::RunVertexStage()
 	}
 }
 
+void Pipeline::NDC2ScreenCoord()
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		s_shader->m_attribute.screen_coord[i] = GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
+	}
+}
+
 void  Pipeline::RunFragmentStage()
 {
 	ivec2 min_box = { s_color_buffer->GetWidth() - 1,  s_color_buffer->GetHeight() - 1};
@@ -84,18 +93,5 @@ void  Pipeline::RunFragmentStage()
 	}
 }
 
-void Pipeline::NDC2ScreenCoord()
-{
-	for (int i = 0; i < 3; ++i)
-	{
-		s_shader->m_attribute.screen_coord[i] = Pipeline::GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
-	}
-}
 
-void Pipeline::DrawTriangles()
-{
-	for (int i = 0; i < s_vao->GetFaceSize(); ++i)
-	{
-	}
-}
 
