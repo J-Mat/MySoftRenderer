@@ -36,6 +36,8 @@ void Scene_HelloTriangle::Render(float delta_time)
 
 void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::shared_ptr<ZBuffer> z_buffer)
 {
+	Pipeline::BindColorBuffer(color_buffer);
+	Pipeline::BindZBuffer(z_buffer);
 	// 相机
 	const vec3 eye(0, 1, 5);
 	const vec3 target(0, 1, 0);
@@ -46,7 +48,7 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	// 模型
 	std::vector<char*> mesh_names =
 	{
-		"../obj/gun/Cerberus.obj"
+		"../res/gun/Cerberus.obj"
 	};
 	
 	for (char* name : mesh_names)

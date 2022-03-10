@@ -66,7 +66,7 @@ void Pipeline::NDC2ScreenCoord()
 
 void  Pipeline::RunFragmentStage()
 {
-	ivec2 min_box = { s_color_buffer->GetWidth() - 1,  s_color_buffer->GetHeight() - 1};
+	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0 };
 	GetBoundingBox(min_box, max_box);
 	for (int x = min_box.x; x <= max_box.x; ++x)
