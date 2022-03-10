@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "mesh.h"
 #include "shader/shader.h"
+#include "render_mesh.h"
 using namespace  Math;
 
 class Scene
@@ -19,7 +20,7 @@ public:
 
 protected:
 	std::shared_ptr<Camera>  m_main_camera;
-	std::vector<std::shared_ptr<Mesh>> m_meshes;
+	std::vector<std::shared_ptr<RenderMesh>> m_meshes;
 };
 
 class Scene_HelloTriangle : public Scene 

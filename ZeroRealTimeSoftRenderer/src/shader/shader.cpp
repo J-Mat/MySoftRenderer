@@ -3,13 +3,6 @@
 
 #define GET_BA_VALUE(type, values)  GetBarycentricValue<type>(values, alpha, beta, gamma)
 
-void IShader::NDC2ScreenCoord()
-{
-	for (int i = 0; i < 3; ++i)
-	{
-		m_attribute.screen_coord[i] = Pipeline::GetSreenCoord(m_attribute.ndc_coord[i]);
-	}
-}
 
 void Shader_HelloTriangle::VertexShader(int vertex_idx)
 {

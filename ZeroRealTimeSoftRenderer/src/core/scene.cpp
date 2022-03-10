@@ -28,14 +28,8 @@ void Scene_HelloTriangle::Render(float delta_time)
 	m_shader->VertexShader(0);
 	m_shader->VertexShader(1);
 	m_shader->VertexShader(2);
-	m_shader->NDC2ScreenCoord();
-	auto* test = m_shader->m_attribute.screen_coord;
-	vec4 pts[3];
-	for (int i = 0; i < 3; ++i)
-	{
-		pts[i] = { test[i].x, test[i].y, 0.0, 1.0 };
-	}
-	Pipeline::DrawTriangle(pts);
+	Pipeline::NDC2ScreenCoord();
+	Pipeline::RunFragmentStage();
 }
 
 
@@ -57,10 +51,10 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	
 	for (char* name : mesh_names)
 	{
-		std::shared_ptr<Mesh> mesh  = std::make_shared<Mesh>(name);
+		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(name);
 		std::shared_ptr<IShader> shader = std::make_shared<Shader_Model>();
-		
-		m_meshes.push_back(mesh);
+		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
+		m_render_commands.push_back(command);
 	}	
 
 }
@@ -68,13 +62,12 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 void Scene_Model::Render(float delta_time)
 {
 	m_main_camera->UpdateCamera(delta_time);
-	for (auto mesh : m_meshes)
+	for (auto command : m_render_commands)
 	{
-		/*
-		attach_shader->m_uniform.model_mat = mat4(1.0f);
-		attach_shader->m_uniform.view_mat = m_main_camera->GetViewMat();
-		attach_shader->m_uniform.perspect_mat = m_main_camera->GetProjectViewMat();	
-		*/
+		auto shader = command->GetAttachShader();
+		shader->m_uniform.model_mat = mat4(1.0f);
+		shader->m_uniform.view_mat = m_main_camera->GetViewMat();
+		shader->m_uniform.perspect_mat = m_main_camera->GetProjectViewMat();
+		command->Commit();
 	}
-
 }

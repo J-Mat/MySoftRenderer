@@ -31,7 +31,7 @@ public:
 
 
 		//vec4 pts[3] = {{0, 0, 0, 1}, {100, 0, 0, 1}, {100, 100, 0, 1}};
-		//Pipeline::DrawTriangle(m_color_buffer, pts);
+		//Pipeline::RunFragmentStage(m_color_buffer, pts);
 		//DrawWindow(m_color_buffer);
 	}
 	

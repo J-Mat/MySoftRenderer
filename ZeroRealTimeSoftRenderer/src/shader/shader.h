@@ -34,6 +34,7 @@ struct Attribute
 	vec3 pos[3];
 	vec4 ndc_coord[3]; // NDC
 	ivec2 screen_coord[3];
+	vec2 texcoord[2];
 	Color colors[3];
 	vec3 normals[3];
 };
@@ -45,7 +46,6 @@ public:
 	Attribute m_attribute;
 	Color frag_color;
 	virtual void VertexShader(int nvertex) {}
-	virtual void NDC2ScreenCoord();
 	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }
 	
 	template <typename T>
