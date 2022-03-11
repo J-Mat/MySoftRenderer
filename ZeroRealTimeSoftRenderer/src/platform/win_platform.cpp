@@ -102,9 +102,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	case WM_MOUSEMOVE:
+	{
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);
 		Input::SetMousePos(x, y);
+		return 0;
+	}
+	case WM_KEYDOWN:
+		App::GetApp()->GetWindowInfo().keys[wParam] = true;
+		return 0;
+	case WM_KEYUP:
+		App::GetApp()->GetWindowInfo().keys[wParam] = false;
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);

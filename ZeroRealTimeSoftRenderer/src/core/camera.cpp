@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "input.h"
+#include "iostream"
 
 
 Camera::Camera(CameraSettings& settings) :
@@ -12,7 +13,7 @@ Camera::Camera(CameraSettings& settings) :
 void Camera::UpdateCamera(float delta_time)
 {
 	ProcessKeyboard(delta_time);
-	ProcessMouseMovement(delta_time);
+	//ProcessMouseMovement(delta_time);
 
 	UpdateMat();
 }
@@ -52,13 +53,26 @@ void Camera::ProcessKeyboard(float delta_time)
 {
 	float velocity = m_settings.speed * delta_time;
 	if (Input::IsKeyPressed('W'))
+	{
 		m_eye += m_forward * velocity;
+		std::cout << "W" << std::endl;
+	}
+		
 	if (Input::IsKeyPressed('A'))
+	{
 		m_eye -= m_right * velocity;
+		std::cout << "A" << std::endl;
+	}
 	if (Input::IsKeyPressed('S'))
-		m_eye -=  m_forward * velocity;
+	{
+		m_eye -= m_forward * velocity;
+		std::cout << "S" << std::endl;
+	}
 	if (Input::IsKeyPressed('D'))
-		m_eye +=  m_right * velocity;
+	{
+		m_eye += m_right * velocity;
+		std::cout << "D" << std::endl;
+	}
 }
 
 

@@ -1,5 +1,6 @@
 #include "pipeline.h"
 #include "shader/shader.h"
+#include "debug.h"
 
 std::shared_ptr<ColorBuffer>  Pipeline::s_color_buffer = nullptr;
 std::shared_ptr<ZBuffer>      Pipeline::s_zbuffer = nullptr;
@@ -31,8 +32,7 @@ void Pipeline::InitShaderAttribute(int face_idx)
 	for (int i = 0; i < 3; ++i)
 	{
 		s_shader->m_attribute.pos[i] = s_vao->Position(face_idx, i);
-		s_shader->m_attribute.normals[i] = s_vao->Normal(face_idx, i);
-		s_shader->m_attribute.texcoord[i] = s_vao->Texcoord(face_idx, i);
+		DEBUG_POS3(s_shader->m_attribute.pos[i]);
 	}
 }
 
@@ -61,6 +61,7 @@ void Pipeline::NDC2ScreenCoord()
 	for (int i = 0; i < 3; ++i)
 	{
 		s_shader->m_attribute.screen_coord[i] = GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
+		DEBUG_POS2(s_shader->m_attribute.screen_coord[i]);
 	}
 }
 

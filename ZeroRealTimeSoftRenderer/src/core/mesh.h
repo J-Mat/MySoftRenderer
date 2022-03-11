@@ -26,13 +26,13 @@ public:
 
 	//map
 	int is_from_mmd;
-	TGAImage *m_diffuse_map;
-	TGAImage *m_normal_map;
-	TGAImage *m_specular_map;
-	TGAImage *m_roughness_map;
-	TGAImage *m_metalness_map;
-	TGAImage *m_occlusion_map;
-	TGAImage *m_emision_map;
+	TGAImage *m_diffuse_map = nullptr;
+	TGAImage* m_normal_map = nullptr;
+	TGAImage *m_specular_map = nullptr;
+	TGAImage *m_roughness_map = nullptr;
+	TGAImage *m_metalness_map = nullptr;
+	TGAImage *m_occlusion_map = nullptr;
+	TGAImage *m_emision_map = nullptr;
 
 	int GetVertexSize();
 	int GetFaceSize();

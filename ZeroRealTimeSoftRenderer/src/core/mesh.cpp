@@ -14,6 +14,12 @@ Mesh::Mesh(const char *filename, int is_skybox, int is_from_mmd)
 	if (in.fail())
 	{
 		printf("load model failed\n");
+		m_positons.push_back(vec3(-1.0f, 0.0f, 0.0f));
+		m_positons.push_back(vec3(1.0f, 0.0f, 0.0f));
+		m_positons.push_back(vec3(0.0f, 1.0f, 0.0f));
+		m_normals.push_back(vec3(0.0f, 1.0f, 0.0f));
+		std::vector<int> n0 = { 0, 0, 0,      1, 0, 0,   2, 0, 0};
+		m_faces.push_back(n0);
 		return;
 	}
 

@@ -39,12 +39,13 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// 相机
-	const vec3 eye(0, 1, 5);
-	const vec3 target(0, 1, 0);
+	const vec3 eye(0, 0, 5);
+	const vec3 target(0, 0, 0);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
 	m_main_camera->Init(eye, target);
 
+	/*
 	// 模型
 	std::vector<char*> mesh_names =
 	{
@@ -58,7 +59,11 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
 		m_render_commands.push_back(command);
 	}	
-
+	*/
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>("xxoo---");
+	std::shared_ptr<IShader> shader = std::make_shared<Shader_Model>();
+	std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
+	m_render_commands.push_back(command);
 }
 
 void Scene_Model::Render(float delta_time)
