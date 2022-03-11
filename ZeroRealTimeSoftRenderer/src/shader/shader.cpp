@@ -19,14 +19,6 @@ void Shader_Model::VertexShader(int vertex_idx)
 {	
 	// MVP
 	vec4 view_pos = m_uniform.view_mat * vec4(m_attribute.pos[vertex_idx], 1.0);
-	DEBUG_INFO("---------------------------------------%d\n", vertex_idx);
-	DEBUG_INFO("view_pos ");
-	DEBUG_POS4(view_pos);
-	vec4 project_pos = m_uniform.perspect_mat * view_pos;
-	project_pos /= project_pos.w;
-	DEBUG_INFO("proj_pos: ");
-	DEBUG_POS4(project_pos);
-	DEBUG_INFO("---------------------------------------\n");
 	m_attribute.ndc_coord[vertex_idx] = m_uniform.perspect_mat * m_uniform.view_mat * vec4(m_attribute.pos[vertex_idx], 1.0);	
 }
 

@@ -45,8 +45,6 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	m_main_camera = std::make_shared<Camera>(settings);
 	m_main_camera->Init(eye, target);
 
-	/*
-	// Ä£ÐÍ
 	std::vector<char*> mesh_names =
 	{
 		"../res/gun/Cerberus.obj"
@@ -59,11 +57,6 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
 		m_render_commands.push_back(command);
 	}	
-	*/
-	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>("xxoo---");
-	std::shared_ptr<IShader> shader = std::make_shared<Shader_Model>();
-	std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
-	m_render_commands.push_back(command);
 }
 
 void Scene_Model::Render(float delta_time)

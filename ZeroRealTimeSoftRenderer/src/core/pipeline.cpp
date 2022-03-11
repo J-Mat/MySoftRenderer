@@ -32,7 +32,6 @@ void Pipeline::InitShaderAttribute(int face_idx)
 	for (int i = 0; i < 3; ++i)
 	{
 		s_shader->m_attribute.pos[i] = s_vao->Position(face_idx, i);
-		DEBUG_POS3(s_shader->m_attribute.pos[i]);
 	}
 }
 
@@ -40,6 +39,8 @@ void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
 {
 	for (ivec2 scrren_coord : s_shader->m_attribute.screen_coord)
 	{
+		scrren_coord.x = clamp(scrren_coord.x ,0, s_color_buffer->GetHeight() - 1);
+		scrren_coord.y = clamp(scrren_coord.y ,0, s_color_buffer->GetWidth() - 1);
 		min_box.x = std::min(min_box.x, scrren_coord.x);
 		min_box.y = std::min(min_box.y, scrren_coord.y);
 
@@ -61,7 +62,6 @@ void Pipeline::NDC2ScreenCoord()
 	for (int i = 0; i < 3; ++i)
 	{
 		s_shader->m_attribute.screen_coord[i] = GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
-		DEBUG_POS2(s_shader->m_attribute.screen_coord[i]);
 	}
 }
 
