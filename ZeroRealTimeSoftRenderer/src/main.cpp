@@ -2,6 +2,9 @@
 #include "scene.h"
 #include "pipeline.h"
 #include "platform/win_platform.h"
+#include "math_ext.h"
+#include "debug.h"
+using namespace Math;
 
 
 const int g_windows_width = 800;
@@ -25,6 +28,7 @@ public:
 	virtual void Render(float delta_time)
 	{
 		m_color_buffer->ClearColorBuffer({0.0f, 0.0f, 0.0f, 1.0f});
+		m_z_buffer->ClearZBuffer();
 		m_scene->Render(delta_time);
 		DrawWindow(m_color_buffer);
 	}
@@ -45,6 +49,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	freopen("CONOUT$", "w", stdout);
 	std::cout << "Hello Zero Real Time Soft Engine!";
 	
+
+
 	WindowsParameters windows_parameters = { hInstance, hPrevInstance, pCmdLine, nCmdShow, g_windows_width, g_windows_height };
 	ZeroRealTimeSoftEngine* app = new ZeroRealTimeSoftEngine();
 		

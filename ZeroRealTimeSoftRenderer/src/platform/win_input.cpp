@@ -1,12 +1,13 @@
 #include "input.h"
 #include "win_platform.h"
+#include "debug.h"
 
 
-int Input::s_cur_x = -1;
-int Input::s_cur_y = -1;
-int Input::s_last_x = -1;
-int Input::s_last_y = -1;
+vec2 Input::s_end_pos = {-1, -1};
+vec2 Input::s_beg_pos = {-1, -1};
 
+std::function<void(void)> Input::OnLeftBtnDownFunc = nullptr;
+std::function<void(void)> Input::OnLeftBtnUpFunc = nullptr;
 
 // 键鼠的输入实现在这里
 bool Input::IsKeyPressed(char key)
@@ -14,19 +15,33 @@ bool Input::IsKeyPressed(char key)
 	return App::GetApp()->GetWindowInfo().keys[key];
 }
 
-vec2 Input::GetMouseOffset()
+void Input::SetStartPos(vec2 pos)
 {
-	int x_offset = s_last_x < 0 ? 0 : s_cur_x - s_last_x;
-	int y_offset = s_last_x < 0 ? 0 : s_cur_x - s_last_x;
-	
-	return vec2(x_offset, y_offset);
+	s_beg_pos = pos;
+	s_end_pos = pos;
 }
 
-void Input::SetMousePos(int x, int y)
+void Input::SetEndtPos(vec2 pos)
 {
-	s_last_x = s_cur_x;
-	s_last_y = s_cur_y;
-	
-	s_cur_x = x;
-	s_cur_y = y;
+	s_end_pos = pos;
+}
+
+vec2 Input::GetMouseOffset()
+{
+	return s_end_pos - s_beg_pos;
+}
+
+bool Input::IsLeftButtonDown()
+{
+	return App::GetApp()->GetWindowInfo().buttons[ButtonType::BT_Left];
+}
+
+void Input::OnLeftBtnDown()
+{
+	OnLeftBtnDownFunc();
+}
+
+void Input::OnLeftBtnUp()
+{
+	OnLeftBtnUpFunc();
 }

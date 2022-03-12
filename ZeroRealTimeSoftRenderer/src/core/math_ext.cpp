@@ -94,10 +94,15 @@ namespace Math
 		m[1][1] = near / t;
 		m[2][2] = (near + far) / (near - far);
 		m[2][3] = -2 * near * far / (far - near);
-		m[3][2] = 1;
+		m[3][2] = -1;
 		m[3][3] = 0;
 		
 		return m;
+	}
+
+	float Remap(float value, float start1, float stop1, float start2, float stop2)
+	{
+		return start2 + (value - start1) * (stop2 - start2) / (stop1 - start1);
 	}
 };
 

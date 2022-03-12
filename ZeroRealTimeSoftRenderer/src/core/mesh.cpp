@@ -220,6 +220,16 @@ vec3 Mesh::Normal(int iface, int nthvert)
 	return glm::normalize(m_normals[idx]);
 }
 
+vec3 Mesh::FaceNormal(int iface)
+{
+	vec3 p0 = Position(iface, 0);
+	vec3 p1 = Position(iface, 1);
+	vec3 p2 = Position(iface, 2);
+	vec3 edg_0 = normalize(p1 - p0);
+	vec3 edg_1 = normalize(p2 - p0);
+	return cross(edg_0, edg_1);
+}
+
 void Mesh::LoadTexture(std::string filename, const char *suffix, TGAImage &img) 
 {
 	std::string texfile(filename);

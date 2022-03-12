@@ -44,16 +44,26 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
 	m_main_camera->Init(eye, target);
+	m_main_camera->BindInput();
 
 	std::vector<char*> mesh_names =
 	{
 		"../res/gun/Cerberus.obj"
+		/*
+		"../res/yayi/yayiface.obj",
+		"../res/yayi/yayibody.obj",
+		"../res/yayi/yayihair.obj",
+		"../res/yayi/yayiarmour1.obj",
+		"../res/yayi/yayiarmour2.obj",
+		"../res/yayi/yayidecoration.obj",
+		"../res/yayi/yayisword.obj"
+		*/
 	};
 	
 	for (char* name : mesh_names)
 	{
 		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(name);
-		std::shared_ptr<IShader> shader = std::make_shared<Shader_Model>();
+		std::shared_ptr<IShader> shader = std::make_shared<Shader_BaseLight>();
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
 		m_render_commands.push_back(command);
 	}	
@@ -68,6 +78,7 @@ void Scene_Model::Render(float delta_time)
 		shader->m_uniform.model_mat = mat4(1.0f);
 		shader->m_uniform.view_mat = m_main_camera->GetViewMat();
 		shader->m_uniform.perspect_mat = m_main_camera->GetProjectViewMat();
+		shader->m_uniform.view_pos = m_main_camera->GetViewPos();
 		command->Commit();
 	}
 }

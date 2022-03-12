@@ -7,6 +7,8 @@ using namespace Math;
 
 using VAO = Mesh;
 
+#define GET_BA_VALUE(type, values)  Pipeline::GetBarycentricValue<type>(values, alpha, beta, gamma)
+
 class Pipeline
 {
 public: 
@@ -14,14 +16,22 @@ public:
 	static void BindZBuffer(std::shared_ptr<ZBuffer> buffer) { s_zbuffer = buffer; }
 	static void BindShader(std::shared_ptr<IShader> shader) { s_shader = shader; }
 	static void BindVAO(std::shared_ptr<VAO> vao) { s_vao = vao; }
+	static std::shared_ptr<VAO> GetBindVAO() { return s_vao; }
 
 	static void InitShaderAttribute(int face_idx);
 	static void RunVertexStage();
+	static bool VisibleClip();
 	static void NDC2ScreenCoord();
 	static ivec2 GetSreenCoord(vec4 ndc_coord);
 	static vec3 GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P);
 	static void GetBoundingBox(ivec2& min_box, ivec2& max_box);
 	static void RunFragmentStage(); // »­Èý½ÇÐÎ
+
+	template <typename T>
+	static T GetBarycentricValue(const T* values, float alpha, float beta, float gamma)
+	{
+		return values[0] * alpha + values[1] * beta + values[2] * gamma;
+	}
 private:
 	static std::shared_ptr<ColorBuffer> s_color_buffer;
 	static std::shared_ptr<ZBuffer> s_zbuffer;

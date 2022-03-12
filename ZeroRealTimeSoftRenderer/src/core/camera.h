@@ -36,22 +36,32 @@ public:
 	Camera(CameraSettings& settings);
 	~Camera() = default;
 	void Init(vec3 eye, vec3 lookat);
+	void BindInput();
 	void UpdateCamera(float delta_time);
+
+	void OnLeftBtnDown();
+	void OnLeftBtnUp();
 private:
 	CameraSettings m_settings;
 	vec3 m_eye;
 	vec3 m_lookat;
 	vec3 m_forward;	
+	float  m_radius;
+	vec3 m_beg_forward;
+	vec3 m_end_forward;
 	vec3 m_right;
 	vec3 m_up;
 	mat4 m_view_mat;
 	mat4 m_project_mat;
 	mat4 m_project_view_mat;
+	float m_yaw;
+	float m_pitch;
 private:
 	void UpdateMat();
 	void ProcessKeyboard(float delta_time);
-	void ProcessMouseMovement(float delta_time);
+	void ProcessMouseMovement();
 public:
+	vec3 GetViewPos() { return m_eye; }
 	mat4 GetViewMat() { return m_view_mat; }
 	mat4 GetProjectMat() { return m_project_mat; }
 	mat4 GetProjectViewMat() { return m_project_mat * m_view_mat; }

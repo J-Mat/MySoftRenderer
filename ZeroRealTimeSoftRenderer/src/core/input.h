@@ -1,5 +1,6 @@
 #pragma once
 #include "math_ext.h"
+#include <functional>
 using namespace Math;
 
 //  定义一套接口，在platform中实现
@@ -11,19 +12,28 @@ enum ButtonType
 	BT_Right,
 };
 
+
 class Input
 {
 public:
+	static std::function<void(void)> OnLeftBtnDownFunc;
+	static std::function<void(void)> OnLeftBtnUpFunc;
 	static bool IsKeyPressed(char key);
-	static vec2 GetMouseOffset();
-	static void SetMousePos(int x, int y);
+	static void SetStartPos(vec2 pos);
+	static void SetEndtPos(vec2 pos);
+	static bool IsLeftButtonDown();
+	
+	static void OnLeftBtnDown();
+	static void OnLeftBtnUp();
 
-private: 
-	static int s_cur_x;
-	static int s_cur_y;
-	static int s_last_x;
-	static int s_last_y;
+	static vec2 GetMouseOffset();
+
+
+private:
+	static vec2 s_beg_pos;
+	static vec2 s_end_pos;
 };
+
 
 
 

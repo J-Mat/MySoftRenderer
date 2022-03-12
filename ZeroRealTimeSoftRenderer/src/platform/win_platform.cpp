@@ -4,6 +4,7 @@
 #include "iostream"
 #include <algorithm>
 #include "input.h"
+#include "debug.h"
 using namespace std;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam);
@@ -41,6 +42,7 @@ void App::Init(const WindowsParameters& windows_parameters)
 	
 	memset(m_window_info.frame_buffer, 0, m_window_info.width * m_window_info.height * 4);
 	memset(m_window_info.keys, 0, sizeof(bool) * 0xff);
+	memset(m_window_info.buttons, false, sizeof(bool) * 3);
 }
 
 void App::Run()
@@ -100,20 +102,34 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM  wParam, LPARAM lParam)
 	{
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		return 0;
+		break;
+	case WM_LBUTTONDOWN:
+	{
+		vec2 mouse_pos = { LOWORD(lParam), HIWORD(lParam) };
+		App::GetApp()->GetWindowInfo().buttons[ButtonType::BT_Left] = true;
+		Input::SetStartPos(mouse_pos);
+		Input::OnLeftBtnDown();
+		break;
+	}
+	case WM_LBUTTONUP:
+		App::GetApp()->GetWindowInfo().buttons[ButtonType::BT_Left] = false;
+		Input::OnLeftBtnUp();
+		break;
 	case WM_MOUSEMOVE:
 	{
-		int x = LOWORD(lParam);
-		int y = HIWORD(lParam);
-		Input::SetMousePos(x, y);
-		return 0;
+		if (Input::IsLeftButtonDown())
+		{
+			vec2 mouse_pos = { LOWORD(lParam), HIWORD(lParam) };
+			Input::SetEndtPos(mouse_pos);
+		}
+		break;
 	}
 	case WM_KEYDOWN:
 		App::GetApp()->GetWindowInfo().keys[wParam] = true;
-		return 0;
+		break;
 	case WM_KEYUP:
 		App::GetApp()->GetWindowInfo().keys[wParam] = false;
-		return 0;
+		break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

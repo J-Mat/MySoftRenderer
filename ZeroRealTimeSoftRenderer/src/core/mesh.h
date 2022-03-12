@@ -37,6 +37,8 @@ public:
 	int GetVertexSize();
 	int GetFaceSize();
 	vec3 Normal(int iface, int nthvert);
+	// Ä¬ÈÏÄæÊ±Õë
+	vec3 FaceNormal(int iface);
 	vec3 Normal(vec2 uv);
 	vec3 Position(int i);
 	vec3 Position(int iface, int nthvert);

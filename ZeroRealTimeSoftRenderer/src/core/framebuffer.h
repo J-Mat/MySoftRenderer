@@ -38,6 +38,8 @@ public:
 	ZBuffer(int width, int height);
 
 	void ClearZBuffer();
+	//  看是否可以写进深度值
+	bool WriteValue(int x, int y, float value);
 	void SetValue(int x, int y, float value);
 	float GetValue(int x, int y);
 };

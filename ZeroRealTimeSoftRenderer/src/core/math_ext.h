@@ -32,6 +32,10 @@ namespace Math
 	mat4 GetPerspectMat(float fovy, float aspect, float near, float far);
 	
 	vec2 GetSreenCoord(int screen_width, int screen_height, vec3 ndc_coord);
+
+
+	float Remap(float value, float start1, float stop1, float start2, float stop2);
+	
 };
 
 

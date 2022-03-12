@@ -29,9 +29,12 @@ vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const
 
 void Pipeline::InitShaderAttribute(int face_idx)
 {	
+	s_shader->m_cur_face_idx = face_idx;
 	for (int i = 0; i < 3; ++i)
-	{
+	{	
 		s_shader->m_attribute.pos[i] = s_vao->Position(face_idx, i);
+		s_shader->m_attribute.texcoord[i] = s_vao->Texcoord(face_idx, i);
+		s_shader->m_attribute.normals[i] = s_vao->Normal(face_idx, i);
 	}
 }
 
@@ -57,6 +60,17 @@ void Pipeline::RunVertexStage()
 	}
 }
 
+bool Pipeline::VisibleClip()
+{
+	return true;
+	vec3 face_normal = s_vao->FaceNormal(s_shader->m_cur_face_idx);
+	vec3 world_normal = vec3(s_shader->m_uniform.model_mat * vec4(face_normal, 0.0f));
+	const mat4& view_mat = s_shader->m_uniform.view_mat;
+	vec3 forward = { view_mat[2][0], view_mat[2][1], view_mat[2][2] };
+	return dot(forward, world_normal) > 0.0f;
+}
+
+
 void Pipeline::NDC2ScreenCoord()
 {
 	for (int i = 0; i < 3; ++i)
@@ -67,6 +81,10 @@ void Pipeline::NDC2ScreenCoord()
 
 void  Pipeline::RunFragmentStage()
 {
+	float z_value[3] = {s_shader->m_attribute.ndc_coord[0].w,
+					s_shader->m_attribute.ndc_coord[1].w,
+					s_shader->m_attribute.ndc_coord[2].w };
+
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0 };
 	GetBoundingBox(min_box, max_box);
@@ -85,8 +103,18 @@ void  Pipeline::RunFragmentStage()
 			{
 				continue;
 			}
-			//float z_P = (pts[0][2] / pts[0][3]) * barycentric_coord.x + (pts[0][2] / pts[1][3]) * barycentric_coord.y + (pts[0][2] / pts[2][3]) * barycentric_coord.z;
-			if (s_shader->FragmentShader(barycentric_coord.x, barycentric_coord.y, barycentric_coord.z))
+
+			// https://zhuanlan.zhihu.com/p/403259571 Í¸ÊÓ½ÃÕý²åÖµ
+			float alpha = barycentric_coord.x / z_value[0];
+			float beta = barycentric_coord.y / z_value[1];
+			float gamma = barycentric_coord.z / z_value[2];
+			float z_n = 1.0f / (alpha + beta + gamma);
+			alpha *= z_n;
+			beta *= z_n;
+			gamma *= z_n;
+			
+			float z_ba = Math::Remap(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
+			if (s_zbuffer->WriteValue(P.x, P.y, z_ba) && s_shader->FragmentShader(alpha, beta, gamma))
 			{
 				s_color_buffer->SetPixel(x, y, s_shader->frag_color);
 			}
