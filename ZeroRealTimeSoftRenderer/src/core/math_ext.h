@@ -34,7 +34,17 @@ namespace Math
 	vec2 GetSreenCoord(int screen_width, int screen_height, vec3 ndc_coord);
 
 
-	float Remap(float value, float start1, float stop1, float start2, float stop2);
+
+	template <typename T>
+	T Remap(T value, T start1, T stop1, T start2, T stop2)
+	{
+		return start2 + (value - start1) * (stop2 - start2) / (stop1 - start1);
+	}
+
+	// 通过UV算出TBN空间，
+	//  https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+	//  https://zhuanlan.zhihu.com/p/144357517
+	void GetTBN(vec3& T, vec3& B, vec3& N, vec3 & normal, vec2* texcoords, vec3* positions);
 	
 };
 

@@ -113,7 +113,7 @@ void  Pipeline::RunFragmentStage()
 			beta *= z_n;
 			gamma *= z_n;
 			
-			float z_ba = Math::Remap(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
+			float z_ba = Math::Remap<float>(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba) && s_shader->FragmentShader(alpha, beta, gamma))
 			{
 				s_color_buffer->SetPixel(x, y, s_shader->frag_color);

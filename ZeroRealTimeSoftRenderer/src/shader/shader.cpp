@@ -33,10 +33,19 @@ bool Shader_BaseLight::FragmentShader(float alpha, float beta, float gamma)
 	// 一些准备工作
 	const vec3& view_pos = m_uniform.view_pos;
 	vec3 world_pos = GET_BA_VALUE(vec3, m_attribute.world_pos);
+	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute.texcoord);
 	vec3 normal = GET_BA_VALUE(vec3, m_attribute.normals);
 	normal = normalize(normal);
+	if (Pipeline::GetBindVAO()->m_normal_map != nullptr)
+	{
+		vec3 T, B, N;
+		Math::GetTBN(T, B, N, normal, m_attribute.texcoord, m_attribute.world_pos);
+		vec3 normal_map = TEXTURE(Normal, texcoord);
+		normal_map =  Math::Remap<vec3>(normal_map, vec3(0.0f), vec3(1.0f), vec3(-1.0f), vec3(1.0f));
+		normal = mat3(T, B, N) * normal_map;
+		normal = normalize(normal);
+	}
 	vec3 view_dir = normalize(view_pos - world_pos);
-	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute.texcoord);
 	vec3 base_color = TEXTURE(Diffuse, texcoord);
 	vec3 light_dir = normalize(-m_dir_light.direction);
 
@@ -51,7 +60,9 @@ bool Shader_BaseLight::FragmentShader(float alpha, float beta, float gamma)
 	vec3 diffuse = m_dir_light.diffuse * diff * base_color;
 	vec3 specular = m_dir_light.specular * spec;
 	
+	
 	frag_color = vec4(ambient + diffuse + specular, 1.0f);
+	frag_color = clamp(frag_color, vec4(0.0f), vec4(1.0f));
 	return true;
 }
 

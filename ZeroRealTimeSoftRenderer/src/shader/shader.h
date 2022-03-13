@@ -9,7 +9,7 @@ struct DirLight
 	// vec3 position; // no longer necessary when using directional lights.
 	vec3 direction = { -0.2f, -1.0f, -0.3f };
 	vec3 ambient = { 0.4f, 0.4f, 0.4f };
-	vec3 diffuse = { 0.8f, 0.8f, 0.8f };
+	vec3 diffuse = { 0.3f, 0.3f, 0.3f };
 	vec3 specular = { 1.0f, 1.0f, 1.0f } ;
 };
 
@@ -41,7 +41,7 @@ struct Attribute
 	vec4 ndc_coord[3]; // NDC
 	vec3 world_pos[3];
 	vec2 screen_coord[3];
-	vec2 texcoord[2];
+	vec2 texcoord[3];
 	Color colors[3];
 	vec3 normals[3];
 };

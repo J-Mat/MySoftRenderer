@@ -99,10 +99,32 @@ namespace Math
 		
 		return m;
 	}
-
-	float Remap(float value, float start1, float stop1, float start2, float stop2)
+	
+	
+	void GetTBN(vec3& T, vec3& B, vec3& N, vec3 & normal, vec2* texcoords, vec3* positions)
 	{
-		return start2 + (value - start1) * (stop2 - start2) / (stop1 - start1);
+		float x1 = texcoords[1][0] - texcoords[0][0];
+		float y1 = texcoords[1][1] - texcoords[0][1];
+		
+		float x2 = texcoords[2][0] - texcoords[0][0];
+		float y2 = texcoords[2][1] - texcoords[0][1];
+		
+		float det = 1.0f / (x1 * y2 - x2 * y1);
+		
+		vec3 e1 = positions[1] - positions[0];
+		vec3 e2 = positions[2] - positions[0];
+		
+		vec3 t = e1 * y2 - e2 * y1;
+		vec3 b = e1 * (-x2) + e2 * x1;
+		
+		t *= det;
+		b *= det;
+		
+		// 斯密特正交
+		//https://www.matongxue.com/madocs/789/
+		N = normalize(normal);
+		T = normalize(t - dot(t, normal) * normal);
+		B = normalize(b - dot(b, normal) * normal - dot(b, t) * t);
 	}
 };
 
