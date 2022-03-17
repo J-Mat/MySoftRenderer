@@ -44,8 +44,7 @@ namespace Math
 	// 通过UV算出TBN空间，
 	//  https://learnopengl.com/Advanced-Lighting/Normal-Mapping
 	//  https://zhuanlan.zhihu.com/p/144357517
-	void GetTBN(vec3& T, vec3& B, vec3& N, vec3 & normal, vec2* texcoords, vec3* positions);
-	
+	void GetTBN(vec3& T, vec3& B, vec3& N, vec3 & normal, vec2* texcoords, vec3* positions);	
 };
 
 

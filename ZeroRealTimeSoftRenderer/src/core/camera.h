@@ -59,7 +59,7 @@ private:
 private:
 	void UpdateMat();
 	void ProcessKeyboard(float delta_time);
-	void ProcessMouseMovement();
+	void ProcessMouseMovement(float delta_time);
 public:
 	vec3 GetViewPos() { return m_eye; }
 	mat4 GetViewMat() { return m_view_mat; }

@@ -7,23 +7,25 @@ using namespace Math;
 struct DirLight
 {
 	// vec3 position; // no longer necessary when using directional lights.
-	vec3 direction = { -0.2f, -1.0f, -0.3f };
+	vec3 direction = { -1.0f, -1.0f, -1.0f };
 	vec3 ambient = { 0.4f, 0.4f, 0.4f };
-	vec3 diffuse = { 0.3f, 0.3f, 0.3f };
+	vec3 diffuse = { 0.03f, 0.03f, 0.03f };
 	vec3 specular = { 1.0f, 1.0f, 1.0f } ;
+	
+	vec3 radiance = { 1.0f, 1.0f, 1.0f };
 };
 
 
-typedef struct cubemap
+typedef struct Cubemap
 {
-	TGAImage* m_faces[6];
-}cubemap_t;
+	TGAImage* faces[6];
+};
 
 typedef struct iblmap
 {
 	int mip_levels;
-	cubemap_t* irradiance_map;
-	cubemap_t* prefilter_maps[15];
+	Cubemap* irradiance_map;
+	Cubemap* prefilter_maps[15];
 	TGAImage* brdf_lut;
 } iblmap_t;
 
@@ -54,6 +56,7 @@ public:
 	Uniform m_uniform;
 	Attribute m_attribute;
 	Color frag_color;
+	DirLight m_dir_light;
 	virtual void VertexShader(int nvertex) {}
 	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }	
 };
@@ -68,12 +71,17 @@ public:
 class Shader_BaseLight : public IShader
 {
 public:
-	DirLight m_dir_light;
-	
-public:
 	virtual void VertexShader(int vetex_idx);
 	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
 
 
+// 由浅入深学习PBR的原理和实现，最强入门总结，没有之一  https://www.cnblogs.com/timlly/p/10631718.html?from=timeline&isappinstalled=0  
+// 
+class Shader_PBR : public IShader
+{
+public:
+	virtual void VertexShader(int vetex_idx);
+	virtual bool FragmentShader(float alpha, float beta, float gamma);
+};
 

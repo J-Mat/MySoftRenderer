@@ -48,8 +48,6 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 
 	std::vector<char*> mesh_names =
 	{
-		"../res/gun/Cerberus.obj"
-		/*
 		"../res/yayi/yayiface.obj",
 		"../res/yayi/yayibody.obj",
 		"../res/yayi/yayihair.obj",
@@ -57,7 +55,6 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 		"../res/yayi/yayiarmour2.obj",
 		"../res/yayi/yayidecoration.obj",
 		"../res/yayi/yayisword.obj"
-		*/
 	};
 	
 	for (char* name : mesh_names)

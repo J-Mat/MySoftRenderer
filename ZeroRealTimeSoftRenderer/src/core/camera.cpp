@@ -16,7 +16,7 @@ void Camera::UpdateCamera(float delta_time)
 	ProcessKeyboard(delta_time);
 	if (Input::IsLeftButtonDown())
 	{
-		ProcessMouseMovement();
+		ProcessMouseMovement(delta_time);
 	}
 
 	UpdateMat();
@@ -83,10 +83,14 @@ void Camera::ProcessKeyboard(float delta_time)
 		m_eye -= m_forward * velocity;
 	if (Input::IsKeyPressed('D'))
 		m_eye += m_right * velocity;
+	if (Input::IsKeyPressed('Q'))
+		m_eye += m_settings.world_up * velocity;
+	if (Input::IsKeyPressed('E'))
+		m_eye -= m_settings.world_up * velocity;
 }
 
 
-void Camera::ProcessMouseMovement()
+void Camera::ProcessMouseMovement(float delta_time)
 {
 	vec2 mouse_offset = Input::GetMouseOffset() * m_settings.mouse_sensivity;
 
@@ -98,12 +102,14 @@ void Camera::ProcessMouseMovement()
 	vec3 end_right = Math::cross(m_end_forward, m_settings.world_up);
 	end_right = normalize(end_right);
 
+	/*
 	mat4 pitch_mat = mat4(1.0f);
 	pitch_mat = Math::rotate(pitch_mat, Math::radians(mouse_offset.y), end_right);
 	m_end_forward = pitch_mat * vec4(m_end_forward, 0.0f);
 	// 对picth的角度进行限制
 	m_end_forward.y = Math::clamp(m_end_forward.y, -0.9f, +0.9f);
 	m_end_forward = Math::normalize(m_end_forward);
+	*/
 
 	m_forward = m_end_forward;
 }
