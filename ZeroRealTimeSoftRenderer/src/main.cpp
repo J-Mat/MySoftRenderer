@@ -21,7 +21,7 @@ public:
 
 	virtual void Startup()
 	{
-		m_scene = std::make_shared<Scene_Model>();
+		m_scene = std::make_shared<Scene_Skybox>();
 		m_scene->GenerateScene(m_color_buffer, m_z_buffer);
 	}
 
@@ -47,7 +47,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	AllocConsole();
 	SetConsoleTitle("debug console");
 	freopen("CONOUT$", "w", stdout);
-	std::cout << "Hello Zero Real Time Soft Engine!";
+	std::cout << "Hello Zero Real Time Soft Engine!\n";
 	
 
 

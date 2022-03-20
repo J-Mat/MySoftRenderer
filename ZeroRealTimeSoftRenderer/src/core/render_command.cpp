@@ -16,7 +16,6 @@ void RenderCommand::Commit()
 	{
 		Pipeline::InitShaderAttribute(face_idx);
 		Pipeline::RunVertexStage();
-		Pipeline::NDC2ScreenCoord();
 		Pipeline::RunFragmentStage();
 	}
 }

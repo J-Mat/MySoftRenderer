@@ -9,6 +9,8 @@ std::shared_ptr<VAO>		  Pipeline::s_vao = nullptr;
 
 ivec2 Pipeline::GetSreenCoord(vec4 ndc_coord)
 {
+	//float y = Math::clamp(ndc_coord.y / ndc_coord.w, -5.0f, 5.0f);
+	//float x = Math::clamp(ndc_coord.x / ndc_coord.w, -5.0f, 5.0f);
 	return { (ndc_coord.y / ndc_coord.w / 2.0 + 0.5) * s_color_buffer->GetHeight(),
 			 (ndc_coord.x / ndc_coord.w / 2.0 + 0.5) * s_color_buffer->GetWidth()};
 }
@@ -57,6 +59,12 @@ void Pipeline::RunVertexStage()
 	for (int i = 0; i < 3; i++)
 	{
 		s_shader->VertexShader(i);
+
+		s_shader->m_attribute.screen_coord[i] = GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
+
+		//ivec2 pos = { x, y };
+		//DEBUG_INFO("screenpos: "); DEBUG_POS2(s_shader->m_attribute.screen_coord[i]);
+		//DEBUG_INFO("------------------\n");
 	}
 }
 
@@ -71,23 +79,33 @@ bool Pipeline::VisibleClip()
 }
 
 
-void Pipeline::NDC2ScreenCoord()
-{
-	for (int i = 0; i < 3; ++i)
-	{
-		s_shader->m_attribute.screen_coord[i] = GetSreenCoord(s_shader->m_attribute.ndc_coord[i]);
-	}
-}
-
 void  Pipeline::RunFragmentStage()
 {
-	float z_value[3] = {s_shader->m_attribute.ndc_coord[0].w,
-					s_shader->m_attribute.ndc_coord[1].w,
-					s_shader->m_attribute.ndc_coord[2].w };
-
+	float z_value[3];
+	vec2 ndc[3];
+	for (int i = 0; i < 3; ++i) 
+	{
+		z_value[i] = s_shader->m_attribute.ndc_coord[i].z / s_shader->m_attribute.ndc_coord[i].w;
+		ndc[i] = { s_shader->m_attribute.ndc_coord[i].x / s_shader->m_attribute.ndc_coord[i].w,
+				   s_shader->m_attribute.ndc_coord[i].y / s_shader->m_attribute.ndc_coord[i].w,
+		};
+		
+		DEBUG_INFO("------------------------\n");
+		DEBUG_POS2(ndc[i]);
+		std::cout << z_value[i] << std::endl;
+		std::cout << s_shader->m_attribute.ndc_coord[i].w << " " << s_shader->m_attribute.ndc_coord[i].z << "  " << -s_shader->m_attribute.ndc_coord[i].w << std::endl;
+	
+	}
+	//std::cout << s_shader->m_attribute.ndc_coord[0].z / s_shader->m_attribute.ndc_coord[0].w << "  " << s_shader->m_attribute.ndc_coord[0].w << "\n";
+	//std::cout << s_shader->m_attribute.ndc_coord[1].z / s_shader->m_attribute.ndc_coord[1].w << "  " << s_shader->m_attribute.ndc_coord[1].w << "\n";
+	//std::cout << s_shader->m_attribute.ndc_coord[2].z / s_shader->m_attribute.ndc_coord[2].w << "  " << s_shader->m_attribute.ndc_coord[2].w << "\n";
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
-	ivec2 max_box = { 0, 0 };
+	ivec2 max_box = { 0, 0};
+	//ivec2 min_box = { 1000,  1000};
+	//ivec2 max_box = { -1000, -1000};
 	GetBoundingBox(min_box, max_box);
+	//DEBUG_INFO("min: ");DEBUG_POS2(min_box);
+	//DEBUG_INFO("max: ");DEBUG_POS2(max_box);
 	for (int x = min_box.x; x <= max_box.x; ++x)
 	{
 		for (int y = min_box.y; y <= max_box.y; ++y)
@@ -104,6 +122,7 @@ void  Pipeline::RunFragmentStage()
 				continue;
 			}
 
+
 			// https://zhuanlan.zhihu.com/p/403259571 Í¸ÊÓ½ÃÕý²åÖµ
 			float alpha = barycentric_coord.x / z_value[0];
 			float beta = barycentric_coord.y / z_value[1];
@@ -112,8 +131,9 @@ void  Pipeline::RunFragmentStage()
 			alpha *= z_n;
 			beta *= z_n;
 			gamma *= z_n;
-			
-			float z_ba = Math::Remap<float>(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
+
+			//float z_ba = Math::Remap<float>(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
+			float z_ba = GET_BA_VALUE(float, z_value);
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba) && s_shader->FragmentShader(alpha, beta, gamma))
 			{
 				s_color_buffer->SetPixel(x, y, s_shader->frag_color);

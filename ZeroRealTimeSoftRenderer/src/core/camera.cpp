@@ -68,7 +68,6 @@ void Camera::UpdateMat()
 	default:
 		break;
 	}
-	m_project_view_mat = m_project_mat * m_view_mat;
 }
 
 

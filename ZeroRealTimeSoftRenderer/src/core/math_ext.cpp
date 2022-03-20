@@ -93,8 +93,8 @@ namespace Math
 		m[0][0] = near / r;
 		m[1][1] = near / t;
 		m[2][2] = (near + far) / (near - far);
-		m[2][3] = -2 * near * far / (far - near);
-		m[3][2] = -1;
+		m[3][2] = -2 * near * far / (far - near);
+		m[2][3] = -1;
 		m[3][3] = 0;
 		
 		return m;

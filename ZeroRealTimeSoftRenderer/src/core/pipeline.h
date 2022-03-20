@@ -21,7 +21,6 @@ public:
 	static void InitShaderAttribute(int face_idx);
 	static void RunVertexStage();
 	static bool VisibleClip();
-	static void NDC2ScreenCoord();
 	static ivec2 GetSreenCoord(vec4 ndc_coord);
 	static vec3 GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P);
 	static void GetBoundingBox(ivec2& min_box, ivec2& max_box);

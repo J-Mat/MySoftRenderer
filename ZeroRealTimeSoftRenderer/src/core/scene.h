@@ -41,6 +41,13 @@ public:
 		std::shared_ptr<ColorBuffer> color_buffer,
 		std::shared_ptr<ZBuffer> z_buffer);
 	virtual void Render(float delta_time);
-private:
-	std::shared_ptr<Shader_HelloTriangle> m_shader;
+};
+
+class Scene_Skybox : public Scene
+{
+public:
+	virtual void GenerateScene(
+		std::shared_ptr<ColorBuffer> color_buffer,
+		std::shared_ptr<ZBuffer> z_buffer);
+	virtual void Render(float delta_time);
 };

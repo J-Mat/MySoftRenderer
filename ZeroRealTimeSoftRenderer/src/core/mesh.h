@@ -2,7 +2,7 @@
 #include "core.h"
 using namespace Math;
 
-typedef struct cubemap cubemap_t; // forward declaration
+struct Cubemap; // forward declaration
 
 class Mesh {
 private:
@@ -21,7 +21,7 @@ public:
 	~Mesh();
 	
 	//skybox
-	cubemap_t *m_environment_map;
+	Cubemap* m_environment_map;
 	int is_skybox;
 
 	//map

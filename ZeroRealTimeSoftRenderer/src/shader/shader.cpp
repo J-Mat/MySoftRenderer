@@ -1,6 +1,7 @@
 #include "shader.h"
 #include "pipeline.h"
 #include "debug.h"
+#include "utils.h"
 
 #define TEXTURE(Type, texcoord)  Pipeline::GetBindVAO()->Type(texcoord)
 
@@ -52,7 +53,7 @@ void Shader_BaseLight::VertexShader(int vertex_idx)
 {	
 	const mat4& model = m_uniform.model_mat;
 	const mat4& view = m_uniform.view_mat;
-	const mat4& projection = m_uniform.perspect_mat;
+	const mat4& projection = m_uniform.project_mat;
 	
 	const vec3& pos = m_attribute.pos[vertex_idx];
 	const vec3& normal = m_attribute.normals[vertex_idx];
@@ -109,14 +110,14 @@ void Shader_PBR::VertexShader(int vertex_idx)
 {
 	const mat4& model = m_uniform.model_mat;
 	const mat4& view = m_uniform.view_mat;
-	const mat4& projection = m_uniform.perspect_mat;
+	const mat4& projection = m_uniform.project_mat;
 
 	const vec3& pos = m_attribute.pos[vertex_idx];
 	const vec3& normal = m_attribute.normals[vertex_idx];
 	// MVP
 	m_attribute.world_pos[vertex_idx] = model * vec4(pos, 1.0);
 	m_attribute.normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
-	m_attribute.ndc_coord[vertex_idx] = projection * view * vec4(pos, 1.0);
+	m_attribute.ndc_coord[vertex_idx] = projection * view * vec4(m_attribute.world_pos[vertex_idx], 1.0f);
 }
 
 // 船部都是抄了learnopengl的
@@ -187,5 +188,34 @@ bool Shader_PBR::FragmentShader(float alpha, float beta, float gamma)
 
 	frag_color = vec4(color, 1.0f);
 
+	return true;
+}
+
+void Shader_Skybox::VertexShader(int vertex_idx)
+{
+	const mat4& model = m_uniform.model_mat;
+	const mat4& view = m_uniform.view_mat;
+	const mat4& projection = m_uniform.project_mat;
+
+	const vec3& pos = m_attribute.pos[vertex_idx];
+	const vec3& normal = m_attribute.normals[vertex_idx];
+	
+	// 世界坐标不变
+	m_attribute.world_pos[vertex_idx] = pos;
+	m_attribute.normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
+	// 相机和天空盒子永远保持相对位置
+	mat4 rot_view = mat4(mat3(view));
+	vec4 gl_pos  = projection * rot_view * vec4(pos, 1.0);
+	
+	// 天空盒的深度一直是最远的
+	m_attribute.ndc_coord[vertex_idx] = gl_pos;// { gl_pos.x, gl_pos.y, gl_pos.w, gl_pos.w };
+}
+
+bool Shader_Skybox::FragmentShader(float alpha, float beta, float gamma)
+{
+	vec3 direction = GET_BA_VALUE(vec3, m_attribute.world_pos);
+	vec3 color = Utils::CubemapSample(direction, Pipeline::GetBindVAO()->m_environment_map);
+	color = { 1.0f, 0.0f, 0.0f };
+	frag_color = vec4(color, 1.0f);
 	return true;
 }

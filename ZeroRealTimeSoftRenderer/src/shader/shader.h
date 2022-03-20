@@ -15,10 +15,20 @@ struct DirLight
 	vec3 radiance = { 1.0f, 1.0f, 1.0f };
 };
 
+enum CubeFace
+{
+	CF_Right,
+	CF_Left,
+	CF_Top,
+	CF_Down,
+	CF_Back,
+	CF_Front,
+	CF_NumFace
+};
 
 typedef struct Cubemap
 {
-	TGAImage* faces[6];
+	TGAImage* faces[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 };
 
 typedef struct iblmap
@@ -33,7 +43,7 @@ struct Uniform
 {
 	mat4 model_mat;
 	mat4 view_mat;
-	mat4 perspect_mat;
+	mat4 project_mat;
 	vec3 view_pos;
 };
 
@@ -57,6 +67,7 @@ public:
 	Attribute m_attribute;
 	Color frag_color;
 	DirLight m_dir_light;
+	std::shared_ptr<Cubemap> m_cubemap;
 	virtual void VertexShader(int nvertex) {}
 	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }	
 };
@@ -79,6 +90,13 @@ public:
 // 由浅入深学习PBR的原理和实现，最强入门总结，没有之一  https://www.cnblogs.com/timlly/p/10631718.html?from=timeline&isappinstalled=0  
 // 
 class Shader_PBR : public IShader
+{
+public:
+	virtual void VertexShader(int vetex_idx);
+	virtual bool FragmentShader(float alpha, float beta, float gamma);
+};
+
+class Shader_Skybox : public IShader
 {
 public:
 	virtual void VertexShader(int vetex_idx);

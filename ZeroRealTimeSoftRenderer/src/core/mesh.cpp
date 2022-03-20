@@ -79,7 +79,7 @@ Mesh::Mesh(const char *filename, int is_skybox, int is_from_mmd)
 	m_environment_map = nullptr;
 	if (is_skybox)
 	{
-		m_environment_map = new cubemap_t();
+		m_environment_map = new Cubemap();
 		LoadCubemap(filename);
 	}
 }
@@ -97,7 +97,7 @@ Mesh::~Mesh()
 	if (m_environment_map)
 	{
 		for (int i = 0; i < 6; i++)
-			delete m_environment_map->m_faces[i];
+			delete m_environment_map->faces[i];
 		delete m_environment_map;
 	}
 }
@@ -167,18 +167,18 @@ void Mesh::CreateMap(const char *filename)
 
 void Mesh::LoadCubemap(const char *filename)
 {
-	m_environment_map->m_faces[0] = new TGAImage();
-	LoadTexture(filename, "_right.tga", m_environment_map->m_faces[0]);
-	m_environment_map->m_faces[1] = new TGAImage();
-	LoadTexture(filename, "_left.tga", m_environment_map->m_faces[1]);
-	m_environment_map->m_faces[2] = new TGAImage();
-	LoadTexture(filename, "_top.tga", m_environment_map->m_faces[2]);
-	m_environment_map->m_faces[3] = new TGAImage();
-	LoadTexture(filename, "_bottom.tga", m_environment_map->m_faces[3]);
-	m_environment_map->m_faces[4] = new TGAImage();
-	LoadTexture(filename, "_back.tga", m_environment_map->m_faces[4]);
-	m_environment_map->m_faces[5] = new TGAImage();
-	LoadTexture(filename, "_front.tga", m_environment_map->m_faces[5]);
+	m_environment_map->faces[0] = new TGAImage();
+	LoadTexture(filename, "_right1.tga", m_environment_map->faces[0]);
+	m_environment_map->faces[1] = new TGAImage();
+	LoadTexture(filename, "_left1.tga", m_environment_map->faces[1]);
+	m_environment_map->faces[2] = new TGAImage();
+	LoadTexture(filename, "_top1.tga", m_environment_map->faces[2]);
+	m_environment_map->faces[3] = new TGAImage();
+	LoadTexture(filename, "_bottom1.tga", m_environment_map->faces[3]);
+	m_environment_map->faces[4] = new TGAImage();
+	LoadTexture(filename, "_back1.tga", m_environment_map->faces[4]);
+	m_environment_map->faces[5] = new TGAImage();
+	LoadTexture(filename, "_front1.tga", m_environment_map->faces[5]);
 }
 
 int Mesh::GetVertexSize() 
