@@ -74,7 +74,6 @@ int Pipeline::ClipPlane(ClipPlane plane)
 		// ÓÐ´©²å
 		if (first_idx != second_idx)
 		{
-
 		}
 	
 	}

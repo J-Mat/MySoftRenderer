@@ -28,11 +28,11 @@ public:
 	static void BindVAO(std::shared_ptr<VAO> vao) { s_vao = vao; }
 	static std::shared_ptr<VAO> GetBindVAO() { return s_vao; }
 	static std::shared_ptr<IShader> GetBindShader() { return  s_shader; }
-
-	//https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf
+	
+	// Æë´Î¿Õ¼ä²Ã¼ô
+	// https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf
 	static bool IsInsidePlane(ClipPlane plane, vec4 ndc_vertex);
 	static int  ClipPlane(ClipPlane plane);
-
 	static void HomoClipping();
 
 	static void InitShaderAttribute(int face_idx);
