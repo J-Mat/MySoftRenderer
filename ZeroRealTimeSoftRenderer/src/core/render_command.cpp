@@ -15,8 +15,13 @@ void RenderCommand::Commit()
 	for (int face_idx = 0; face_idx < m_mesh->GetFaceSize(); ++face_idx)
 	{
 		Pipeline::InitShaderAttribute(face_idx);
-		Pipeline::RunVertexStage();
-		Pipeline::RunFragmentStage();
+		Pipeline::RunVertexStage();	
+		Pipeline::HomoClipping();
+		int vertex_num = Pipeline::GetBindShader()->vertex_num;
+		for (int start_idx = 0; start_idx < vertex_num - 2; ++start_idx)
+		{
+			Pipeline::RunFragmentStage(start_idx);
+		}
 	}
 }
 

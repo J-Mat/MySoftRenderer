@@ -12,16 +12,16 @@ void Scene_HelloTriangle::GenerateScene(std::shared_ptr<ColorBuffer> color_buffe
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {0.5, -0.5, 0, 1.0} };
-	m_shader->m_attribute.ndc_coord[0] = ndc_coord[0];
-	m_shader->m_attribute.ndc_coord[1] = ndc_coord[1];
-	m_shader->m_attribute.ndc_coord[2] = ndc_coord[2];
+	m_shader->m_attribute[cur_attr_idx].ndc_coord[0] = ndc_coord[0];
+	m_shader->m_attribute[cur_attr_idx].ndc_coord[1] = ndc_coord[1];
+	m_shader->m_attribute[cur_attr_idx].ndc_coord[2] = ndc_coord[2];
 
 	Color colors[3] = {{1.0f, 0.0f, 0.0f, 1.0}, 
 						  {0.0f, 1.0f, 0.0f, 1.0},
 						  {0.0f, 0.0f, 1.0f, 1.0}};
-	m_shader->m_attribute.colors[0] = colors[0];
-	m_shader->m_attribute.colors[1] = colors[1];
-	m_shader->m_attribute.colors[2] = colors[2];
+	m_shader->m_attribute[cur_attr_idx].colors[0] = colors[0];
+	m_shader->m_attribute[cur_attr_idx].colors[1] = colors[1];
+	m_shader->m_attribute[cur_attr_idx].colors[2] = colors[2];
 }
 
 void Scene_HelloTriangle::Render(float delta_time)
@@ -29,7 +29,7 @@ void Scene_HelloTriangle::Render(float delta_time)
 	m_shader->VertexShader(0);
 	m_shader->VertexShader(1);
 	m_shader->VertexShader(2);
-	Pipeline::RunFragmentStage();
+	Pipeline::RunFragmentStage(0);
 }
 
 
@@ -109,7 +109,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	meshes[1] = std::make_shared<Mesh>(mesh_names[1], true);
 	shaders[1] = std::make_shared<Shader_Skybox>();
 	
-	for (int i = 0; i < 1; ++i)
+	for (int i = 1; i < 2; ++i)
 	{
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(meshes[i], shaders[i]);
 		m_render_commands.push_back(command);
@@ -127,25 +127,6 @@ void Scene_Skybox::Render(float delta_time)
 		shader->m_uniform.view_mat = m_main_camera->GetViewMat();
 		shader->m_uniform.project_mat = m_main_camera->GetProjectMat();
 		shader->m_uniform.view_pos = m_main_camera->GetViewPos();
-		//command->Commit();
-		//continue;
-		vec4 pos = { 0.0f, 0.0f, 0.0f, 1.0f };
-		vec4 view_pos = shader->m_uniform.view_mat * pos;
-		DEBUG_INFO("view_pos-----------:");
-		DEBUG_POS4(view_pos);
-
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				std::cout << shader->m_uniform.project_mat[i][j] << " ";
-			}
-			DEBUG_INFO("\n");
-		}
-
-		DEBUG_INFO("ndc_pos-----------:");
-		vec4 p_pos = shader->m_uniform.project_mat * view_pos;
-		DEBUG_POS4(p_pos);
-		shader->m_uniform.model_mat = mat4(1.0f);
+		command->Commit();
 	}
 }

@@ -43,9 +43,9 @@ void Shader_HelloTriangle::VertexShader(int vertex_idx)
 {
 }
 
-bool Shader_HelloTriangle::FragmentShader(float alpha, float beta, float gamma)
+bool Shader_HelloTriangle::FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx)
 {
-	frag_color = GET_BA_VALUE(Color, m_attribute.colors);
+	frag_color = GET_BA_VALUE(Color, m_attribute[cur_attr_idx].colors, start_vertex_idx);
 	return true;
 }
 
@@ -55,26 +55,26 @@ void Shader_BaseLight::VertexShader(int vertex_idx)
 	const mat4& view = m_uniform.view_mat;
 	const mat4& projection = m_uniform.project_mat;
 	
-	const vec3& pos = m_attribute.pos[vertex_idx];
-	const vec3& normal = m_attribute.normals[vertex_idx];
+	const vec3& pos = m_attribute[cur_attr_idx].pos[vertex_idx];
+	const vec3& normal = m_attribute[cur_attr_idx].normals[vertex_idx];
 	// MVP
-	m_attribute.world_pos[vertex_idx] = model * vec4(pos, 1.0);
-	m_attribute.normals[vertex_idx] = mat3(transpose(inverse(model)))* normal;
-	m_attribute.ndc_coord[vertex_idx] = projection * view * vec4(pos, 1.0);
+	m_attribute[cur_attr_idx].world_pos[vertex_idx] = model * vec4(pos, 1.0);
+	m_attribute[cur_attr_idx].normals[vertex_idx] = mat3(transpose(inverse(model)))* normal;
+	m_attribute[cur_attr_idx].ndc_coord[vertex_idx] = projection * view * vec4(pos, 1.0);
 }
 
-bool Shader_BaseLight::FragmentShader(float alpha, float beta, float gamma)
+bool Shader_BaseLight::FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx)
 {
 	// 一些准备工作
 	const vec3& view_pos = m_uniform.view_pos;
-	vec3 world_pos = GET_BA_VALUE(vec3, m_attribute.world_pos);
-	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute.texcoord);
-	vec3 normal = GET_BA_VALUE(vec3, m_attribute.normals);
+	vec3 world_pos = GET_BA_VALUE(vec3, m_attribute[cur_attr_idx].world_pos, start_vertex_idx);
+	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute[cur_attr_idx].texcoord, start_vertex_idx);
+	vec3 normal = GET_BA_VALUE(vec3, m_attribute[cur_attr_idx].normals, start_vertex_idx);
 	normal = normalize(normal);
 	if (Pipeline::GetBindVAO()->m_normal_map != nullptr)
 	{
 		vec3 T, B, N;
-		Math::GetTBN(T, B, N, normal, m_attribute.texcoord, m_attribute.world_pos);
+		Math::GetTBN(T, B, N, normal, m_attribute[cur_attr_idx].texcoord + start_vertex_idx, m_attribute[cur_attr_idx].world_pos + start_vertex_idx);
 		vec3 normal_map = TEXTURE(Normal, texcoord);
 		normal_map =  Math::Remap<vec3>(normal_map, vec3(0.0f), vec3(1.0f), vec3(-1.0f), vec3(1.0f));
 		normal = mat3(T, B, N) * normal_map;
@@ -112,26 +112,26 @@ void Shader_PBR::VertexShader(int vertex_idx)
 	const mat4& view = m_uniform.view_mat;
 	const mat4& projection = m_uniform.project_mat;
 
-	const vec3& pos = m_attribute.pos[vertex_idx];
-	const vec3& normal = m_attribute.normals[vertex_idx];
+	const vec3& pos = m_attribute[cur_attr_idx].pos[vertex_idx];
+	const vec3& normal = m_attribute[cur_attr_idx].normals[vertex_idx];
 	// MVP
-	m_attribute.world_pos[vertex_idx] = model * vec4(pos, 1.0);
-	m_attribute.normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
-	m_attribute.ndc_coord[vertex_idx] = projection * view * vec4(m_attribute.world_pos[vertex_idx], 1.0f);
+	m_attribute[cur_attr_idx].world_pos[vertex_idx] = model * vec4(pos, 1.0);
+	m_attribute[cur_attr_idx].normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
+	m_attribute[cur_attr_idx].ndc_coord[vertex_idx] = projection * view * vec4(m_attribute[cur_attr_idx].world_pos[vertex_idx], 1.0f);
 }
 
 // 船部都是抄了learnopengl的
-bool Shader_PBR::FragmentShader(float alpha, float beta, float gamma)
+bool Shader_PBR::FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx)
 {
 	const vec3& view_pos = m_uniform.view_pos;
-	vec3 world_pos = GET_BA_VALUE(vec3, m_attribute.world_pos);
-	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute.texcoord);
-	vec3 normal = GET_BA_VALUE(vec3, m_attribute.normals);
+	vec3 world_pos = GET_BA_VALUE(vec3, m_attribute[cur_attr_idx].world_pos, start_vertex_idx);
+	vec2 texcoord = GET_BA_VALUE(vec2, m_attribute[cur_attr_idx].texcoord, start_vertex_idx);
+	vec3 normal = GET_BA_VALUE(vec3, m_attribute[cur_attr_idx].normals, start_vertex_idx);
 	normal = normalize(normal);
 	if (Pipeline::GetBindVAO()->m_normal_map != nullptr)
 	{
 		vec3 T, B, N;
-		Math::GetTBN(T, B, N, normal, m_attribute.texcoord, m_attribute.world_pos);
+		Math::GetTBN(T, B, N, normal, m_attribute[cur_attr_idx].texcoord + start_vertex_idx, m_attribute[cur_attr_idx].world_pos + start_vertex_idx);
 		vec3 normal_map = TEXTURE(Normal, texcoord);
 		normal_map = Math::Remap<vec3>(normal_map, vec3(0.0f), vec3(1.0f), vec3(-1.0f), vec3(1.0f));
 		normal = mat3(T, B, N) * normal_map;
@@ -197,25 +197,26 @@ void Shader_Skybox::VertexShader(int vertex_idx)
 	const mat4& view = m_uniform.view_mat;
 	const mat4& projection = m_uniform.project_mat;
 
-	const vec3& pos = m_attribute.pos[vertex_idx];
-	const vec3& normal = m_attribute.normals[vertex_idx];
+	const vec3& pos = m_attribute[cur_attr_idx].pos[vertex_idx];
+	const vec3& normal = m_attribute[cur_attr_idx].normals[vertex_idx];
 	
 	// 世界坐标不变
-	m_attribute.world_pos[vertex_idx] = pos;
-	m_attribute.normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
+	m_attribute[cur_attr_idx].world_pos[vertex_idx] = pos;
+	m_attribute[cur_attr_idx].normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
 	// 相机和天空盒子永远保持相对位置
 	mat4 rot_view = mat4(mat3(view));
 	vec4 gl_pos  = projection * rot_view * vec4(pos, 1.0);
+
 	
 	// 天空盒的深度一直是最远的
-	m_attribute.ndc_coord[vertex_idx] = gl_pos;// { gl_pos.x, gl_pos.y, gl_pos.w, gl_pos.w };
+	m_attribute[cur_attr_idx].ndc_coord[vertex_idx] = gl_pos;// { gl_pos.x, gl_pos.y, gl_pos.w, gl_pos.w };
 }
 
-bool Shader_Skybox::FragmentShader(float alpha, float beta, float gamma)
+bool Shader_Skybox::FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx)
 {
-	vec3 direction = GET_BA_VALUE(vec3, m_attribute.world_pos);
+	vec3 direction = GET_BA_VALUE(vec3, m_attribute[cur_attr_idx].world_pos, start_vertex_idx);
 	vec3 color = Utils::CubemapSample(direction, Pipeline::GetBindVAO()->m_environment_map);
-	color = { 1.0f, 0.0f, 0.0f };
+	//color = { 1.0f, 0.0f, 0.0f };
 	frag_color = vec4(color, 1.0f);
 	return true;
 }
