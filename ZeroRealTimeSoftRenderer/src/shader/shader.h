@@ -74,6 +74,9 @@ public:
 	std::shared_ptr<Cubemap> m_cubemap;
 	virtual void VertexShader(int nvertex) {}
 	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx) { return true; }	
+
+	virtual Attribute& GetAttribute() { return m_attribute[cur_attr_idx]; }
+	virtual Uniform& GetUniform() { return m_uniform; }
 };
 
 class Shader_HelloTriangle : public IShader
