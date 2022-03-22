@@ -7,6 +7,7 @@
 
 void Scene_HelloTriangle::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::shared_ptr<ZBuffer> z_buffer)
 {
+	int cur_attr_idx = 0;
 	m_shader = std::make_shared<Shader_HelloTriangle>();
 	Pipeline::BindShader(m_shader);
 	Pipeline::BindColorBuffer(color_buffer);

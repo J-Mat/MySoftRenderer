@@ -32,7 +32,7 @@ public:
 	// Æë´Î¿Õ¼ä²Ã¼ô
 	// https://fabiensanglard.net/polygon_codec/clippingdocument/Clipping.pdf
 	static bool IsInsidePlane(ClipPlane plane, vec4 ndc_vertex);
-	static int  ClipPlane(ClipPlane plane);
+	static int  ClipThePlane(ClipPlane plane);
 	static void HomoClipping();
 
 	static void InitShaderAttribute(int face_idx);

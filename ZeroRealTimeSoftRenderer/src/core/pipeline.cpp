@@ -59,7 +59,7 @@ bool Pipeline::IsInsidePlane(ClipPlane plane, vec4 ndc_vertex)
 }
 
 
-int Pipeline::ClipPlane(ClipPlane plane)
+int Pipeline::ClipThePlane(ClipPlane plane)
 {
 	int input = s_shader->m_cur_face_idx;
 	int output = (input ^ 1);
