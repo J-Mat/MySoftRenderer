@@ -87,20 +87,17 @@ void Pipeline::HomoClipping()
 
 void Pipeline::InitShaderAttribute(int face_idx)
 {	
-	int cur_attr_idx = s_shader->cur_attr_idx;
-	s_shader->m_cur_face_idx = face_idx;
 	for (int i = 0; i < 3; ++i)
 	{	
-		s_shader->m_attribute[cur_attr_idx].pos[i] = s_vao->Position(face_idx, i);
-		s_shader->m_attribute[cur_attr_idx].texcoord[i] = s_vao->Texcoord(face_idx, i);
-		s_shader->m_attribute[cur_attr_idx].normals[i] = s_vao->Normal(face_idx, i);
+		s_shader->GetAttribute().pos[i] = s_vao->Position(face_idx, i);
+		s_shader->GetAttribute().texcoord[i] = s_vao->Texcoord(face_idx, i);
+		s_shader->GetAttribute().normals[i] = s_vao->Normal(face_idx, i);
 	}
 }
 
 void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
 {
-	int cur_attr_idx = s_shader->cur_attr_idx;
-	for (ivec2 scrren_coord : s_shader->m_attribute[cur_attr_idx].screen_coord)
+	for (ivec2 scrren_coord : s_shader->GetAttribute().screen_coord)
 	{
 		scrren_coord.x = clamp(scrren_coord.x ,0, s_color_buffer->GetHeight() - 1);
 		scrren_coord.y = clamp(scrren_coord.y ,0, s_color_buffer->GetWidth() - 1);
@@ -114,11 +111,10 @@ void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
 
 void Pipeline::RunVertexStage()
 {
-	int cur_attr_idx = s_shader->cur_attr_idx;
 	for (int i = 0; i < 3; i++)
 	{
 		s_shader->VertexShader(i);
-		s_shader->m_attribute[cur_attr_idx].screen_coord[i] = GetSreenCoord(s_shader->m_attribute[cur_attr_idx].ndc_coord[i]);
+		s_shader->GetAttribute().screen_coord[i] = GetSreenCoord(s_shader->GetAttribute().ndc_coord[i]);
 	}
 }
 
@@ -135,27 +131,26 @@ bool Pipeline::VisibleClip()
 
 void Pipeline::RunFragmentStage(int start_vertex_idx)
 {	
-	int cur_attr_idx = s_shader->cur_attr_idx;
 	float z_value[3];
 	vec3 ndc[3];
 	//DEBUG_INFO("------------------------\n");
 	for (int i = start_vertex_idx; i < start_vertex_idx + 3; ++i) 
 	{
-		z_value[i] = -s_shader->m_attribute[cur_attr_idx].ndc_coord[i].w;
-		ndc[i] = { s_shader->m_attribute[cur_attr_idx].ndc_coord[i].x / s_shader->m_attribute[cur_attr_idx].ndc_coord[i].w,
-				   s_shader->m_attribute[cur_attr_idx].ndc_coord[i].y / s_shader->m_attribute[cur_attr_idx].ndc_coord[i].w,
-				   s_shader->m_attribute[cur_attr_idx].ndc_coord[i].z / s_shader->m_attribute[cur_attr_idx].ndc_coord[i].w,
+		z_value[i] = -s_shader->GetAttribute().ndc_coord[i].w;
+		ndc[i] = { s_shader->GetAttribute().ndc_coord[i].x / s_shader->GetAttribute().ndc_coord[i].w,
+				   s_shader->GetAttribute().ndc_coord[i].y / s_shader->GetAttribute().ndc_coord[i].w,
+				   s_shader->GetAttribute().ndc_coord[i].z / s_shader->GetAttribute().ndc_coord[i].w,
 		};
 		
-		//DEBUG_INFO("pos   %d:  ", i); DEBUG_POS3(s_shader->m_attribute[cur_attr_idx].world_pos[i]);
+		//DEBUG_INFO("pos   %d:  ", i); DEBUG_POS3(s_shader->GetAttribute().world_pos[i]);
 		//DEBUG_INFO("ndc   %d:  ", i); DEBUG_POS3(ndc[i]);
-		//DEBUG_INFO("src   %d:  ", i); DEBUG_POS2(s_shader->m_attribute[cur_attr_idx].screen_coord[i]);
+		//DEBUG_INFO("src   %d:  ", i); DEBUG_POS2(s_shader->GetAttribute().screen_coord[i]);
 		
 	
 	}
-	//std::cout << s_shader->m_attribute[cur_attr_idx].ndc_coord[0].z / s_shader->m_attribute[cur_attr_idx].ndc_coord[0].w << "  " << s_shader->m_attribute[cur_attr_idx].ndc_coord[0].w << "\n";
-	//std::cout << s_shader->m_attribute[cur_attr_idx].ndc_coord[1].z / s_shader->m_attribute[cur_attr_idx].ndc_coord[1].w << "  " << s_shader->m_attribute[cur_attr_idx].ndc_coord[1].w << "\n";
-	//std::cout << s_shader->m_attribute[cur_attr_idx].ndc_coord[2].z / s_shader->m_attribute[cur_attr_idx].ndc_coord[2].w << "  " << s_shader->m_attribute[cur_attr_idx].ndc_coord[2].w << "\n";
+	//std::cout << s_shader->GetAttribute().ndc_coord[0].z / s_shader->GetAttribute().ndc_coord[0].w << "  " << s_shader->GetAttribute().ndc_coord[0].w << "\n";
+	//std::cout << s_shader->GetAttribute().ndc_coord[1].z / s_shader->GetAttribute().ndc_coord[1].w << "  " << s_shader->GetAttribute().ndc_coord[1].w << "\n";
+	//std::cout << s_shader->GetAttribute().ndc_coord[2].z / s_shader->GetAttribute().ndc_coord[2].w << "  " << s_shader->GetAttribute().ndc_coord[2].w << "\n";
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0};
 	GetBoundingBox(min_box, max_box);
@@ -169,9 +164,9 @@ void Pipeline::RunFragmentStage(int start_vertex_idx)
 		{
 			ivec2 P = { x, y };
 			vec3 barycentric_coord = Pipeline::GetBarycentric(
-				s_shader->m_attribute[cur_attr_idx].screen_coord[start_vertex_idx],
-				s_shader->m_attribute[cur_attr_idx].screen_coord[start_vertex_idx + 1],
-				s_shader->m_attribute[cur_attr_idx].screen_coord[start_vertex_idx + 2],
+				s_shader->GetAttribute().screen_coord[start_vertex_idx],
+				s_shader->GetAttribute().screen_coord[start_vertex_idx + 1],
+				s_shader->GetAttribute().screen_coord[start_vertex_idx + 2],
 				P
 			);
 			if (barycentric_coord.x < 0.0f || barycentric_coord.y < 0.0f || barycentric_coord.z < 0.0f)
