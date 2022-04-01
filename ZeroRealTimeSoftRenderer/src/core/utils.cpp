@@ -65,13 +65,13 @@ void Utils::CalculateCubeMapUV(vec3 direction, vec2& texcoord, int& face_index)
 		if (direction.z > .0f)				
 		{
 			face_index = CubeFace::CF_Back;
-			sc = -direction.x;
+			sc = +direction.x;
 			tc = +direction.y;
 		}
 		else							
 		{
 			face_index = CubeFace::CF_Front;
-			sc = +direction.x;
+			sc = -direction.x;
 			tc = +direction.y;
 		}
 	}
