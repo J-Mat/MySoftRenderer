@@ -95,7 +95,7 @@ void Camera::ProcessMouseMovement(float delta_time)
 
 	// 加 0 是对向量操作，  加 1 是对点操作
 	mat4 yaw_mat = mat4(1.0f);
-	yaw_mat = Math::rotate(yaw_mat, -Math::radians(mouse_offset.x), glm::vec3(0.0f, 1.0f, 0.0f));
+	yaw_mat = Math::rotate(yaw_mat, Math::radians(mouse_offset.x), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_end_forward = yaw_mat * vec4(m_beg_forward, 0.0f);
 	
 	vec3 end_right = Math::cross(m_end_forward, m_settings.world_up);

@@ -47,43 +47,50 @@ struct Uniform
 	vec3 view_pos;
 };
 
+#define MAX_VERTEXES  10
+
 struct Attribute
 {
-	vec3 pos[3];
-	vec4 ndc_coord[3]; // NDC
-	vec3 world_pos[3];
-	vec2 screen_coord[3];
-	vec2 texcoord[3];
-	Color colors[3];
-	vec3 normals[3];
+	vec3 pos[MAX_VERTEXES];
+	vec4 ndc_coord[MAX_VERTEXES]; 
+	vec3 world_pos[MAX_VERTEXES];
+	vec2 screen_coord[MAX_VERTEXES];
+	vec2 texcoord[MAX_VERTEXES];
+	Color colors[MAX_VERTEXES];
+	vec3 normals[MAX_VERTEXES];
 };
 
 
 class IShader
 {
 public:
+	int cur_attr_idx = 0;
 	int m_cur_face_idx;
+	int vertex_num = 3;
 	Uniform m_uniform;
-	Attribute m_attribute;
+	Attribute m_attribute[2];
 	Color frag_color;
 	DirLight m_dir_light;
 	std::shared_ptr<Cubemap> m_cubemap;
 	virtual void VertexShader(int nvertex) {}
-	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }	
+	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx) { return true; }	
+
+	virtual Attribute& GetAttribute() { return m_attribute[cur_attr_idx]; }
+	virtual Uniform& GetUniform() { return m_uniform; }
 };
 
 class Shader_HelloTriangle : public IShader
 {
 public:
 	virtual void VertexShader(int vetex_idx);
-	virtual bool FragmentShader(float alpha, float beta, float gamma);
+	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx);
 };
 
 class Shader_BaseLight : public IShader
 {
 public:
 	virtual void VertexShader(int vetex_idx);
-	virtual bool FragmentShader(float alpha, float beta, float gamma);
+	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx);
 };
 
 
@@ -93,13 +100,13 @@ class Shader_PBR : public IShader
 {
 public:
 	virtual void VertexShader(int vetex_idx);
-	virtual bool FragmentShader(float alpha, float beta, float gamma);
+	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx);
 };
 
 class Shader_Skybox : public IShader
 {
 public:
 	virtual void VertexShader(int vetex_idx);
-	virtual bool FragmentShader(float alpha, float beta, float gamma);
+	virtual bool FragmentShader(float alpha, float beta, float gamma, int start_vertex_idx);
 };
 
