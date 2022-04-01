@@ -89,12 +89,6 @@ void  Pipeline::RunFragmentStage()
 		ndc[i] = { s_shader->m_attribute.ndc_coord[i].x / s_shader->m_attribute.ndc_coord[i].w,
 				   s_shader->m_attribute.ndc_coord[i].y / s_shader->m_attribute.ndc_coord[i].w,
 		};
-		
-		DEBUG_INFO("------------------------\n");
-		DEBUG_POS2(ndc[i]);
-		std::cout << z_value[i] << std::endl;
-		std::cout << s_shader->m_attribute.ndc_coord[i].w << " " << s_shader->m_attribute.ndc_coord[i].z << "  " << -s_shader->m_attribute.ndc_coord[i].w << std::endl;
-	
 	}
 	//std::cout << s_shader->m_attribute.ndc_coord[0].z / s_shader->m_attribute.ndc_coord[0].w << "  " << s_shader->m_attribute.ndc_coord[0].w << "\n";
 	//std::cout << s_shader->m_attribute.ndc_coord[1].z / s_shader->m_attribute.ndc_coord[1].w << "  " << s_shader->m_attribute.ndc_coord[1].w << "\n";

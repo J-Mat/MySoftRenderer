@@ -127,25 +127,5 @@ void Scene_Skybox::Render(float delta_time)
 		shader->m_uniform.view_mat = m_main_camera->GetViewMat();
 		shader->m_uniform.project_mat = m_main_camera->GetProjectMat();
 		shader->m_uniform.view_pos = m_main_camera->GetViewPos();
-		//command->Commit();
-		//continue;
-		vec4 pos = { 0.0f, 0.0f, 0.0f, 1.0f };
-		vec4 view_pos = shader->m_uniform.view_mat * pos;
-		DEBUG_INFO("view_pos-----------:");
-		DEBUG_POS4(view_pos);
-
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; ++j)
-			{
-				std::cout << shader->m_uniform.project_mat[i][j] << " ";
-			}
-			DEBUG_INFO("\n");
-		}
-
-		DEBUG_INFO("ndc_pos-----------:");
-		vec4 p_pos = shader->m_uniform.project_mat * view_pos;
-		DEBUG_POS4(p_pos);
-		shader->m_uniform.model_mat = mat4(1.0f);
 	}
 }
