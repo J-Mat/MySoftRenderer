@@ -66,7 +66,7 @@ void ZBuffer::ClearZBuffer()
 		for (int j = 0; j < m_width; ++j)
 		{
 			int index = GetIndex(i, j); 	
-			FLOAT_BUF(m_buffer)[index] = -10000.0f;
+			FLOAT_BUF(m_buffer)[index] = 10000.0f;
 		}
 	}
 }
@@ -75,7 +75,7 @@ bool ZBuffer::WriteValue(int x, int y, float value)
 {
 	int index = GetIndex(x, y);
 	float buffer_value = FLOAT_BUF(m_buffer)[index];
-	if (value > buffer_value)
+	if (value < buffer_value)
 	{
 		FLOAT_BUF(m_buffer)[index] = value;
 		return true;

@@ -171,7 +171,7 @@ void App::InitBitmapHeader(BITMAPINFOHEADER& bitmap_header)
 	memset(&bitmap_header, 0, sizeof(BITMAPINFOHEADER));
 	bitmap_header.biSize = sizeof(BITMAPINFOHEADER);
 	bitmap_header.biWidth = m_window_info.width;
-	bitmap_header.biHeight = m_window_info.height;
+	bitmap_header.biHeight = -m_window_info.height;
 	bitmap_header.biPlanes = 1;
 	bitmap_header.biBitCount = 32;
 	bitmap_header.biCompression = BI_RGB;

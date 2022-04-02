@@ -76,7 +76,7 @@ namespace Math
 		m[1][1] = near / t;
 		m[2][2] = (near + far) / (near - far);
 		m[3][2] = near * far / (far - near);
-		m[2][3] = 1;
+		m[2][3] = -1;
 		m[3][3] = 0;
 		
 		return m;

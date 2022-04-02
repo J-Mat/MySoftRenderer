@@ -31,31 +31,30 @@ vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const
 
 bool Pipeline::IsInsidePlane(ClipPlane plane, vec4 ndc_vertex)
 {
-	ndc_vertex /= ndc_vertex.w;
 	switch (plane)
 	{
 	case CP_Left:
-		return ndc_vertex.x >= -1.0f;
+		return -ndc_vertex.w <= ndc_vertex.x;
 		break;
 	case CP_Right:
-		return ndc_vertex.x <= +1.0f;
+		return ndc_vertex.x <= ndc_vertex.w;
 		break;
 	case CP_Top:
-		return ndc_vertex.y <= +1.0f;
+		return ndc_vertex.y <= ndc_vertex.w;
 		break;
 	case CP_Down:
-		return ndc_vertex.y >= -1.0f;
+		return -ndc_vertex.w <= ndc_vertex.y;
 		break;
 	case CP_Front:
-		return ndc_vertex.z <= +1.0f;	
+		return -ndc_vertex.w <= ndc_vertex.z;
 		break;
 	case CP_Back:
-		return ndc_vertex.z >= -1.0f;	
+		return ndc_vertex.z <= ndc_vertex.w;	
 		break;
 	default:
 		break;
 	}
-	return true;
+	return false;
 }
 
 
@@ -82,7 +81,19 @@ int Pipeline::ClipThePlane(ClipPlane plane)
 
 void Pipeline::HomoClipping()
 {
-
+	for (int vertex_idx = 0; vertex_idx < 3; ++vertex_idx)
+	{
+		vec4 ndc = s_shader->GetClipAttribute().ndc_coord[vertex_idx];
+		for (int plane = ClipPlane::CP_Left; plane < ClipPlane::CP_PlaneNum; ++plane)
+		{
+			
+			if (!IsInsidePlane((ClipPlane)plane, ndc))
+			{
+				s_shader->vertex_num = 0;
+				return;
+			}
+		}
+	}
 }
 
 void Pipeline::InitShaderAttribute(int face_idx)
@@ -151,21 +162,15 @@ void Pipeline::RunFragmentStage()
 	//DEBUG_INFO("------------------------\n");
 	for (int i = 0; i <  3; ++i) 
 	{
-		z_value[i] = -s_shader->GetAttribute().ndc_coord[i].w;
+		z_value[i] = s_shader->GetAttribute().ndc_coord[i].w;
 		ndc[i] = { s_shader->GetAttribute().ndc_coord[i].x / s_shader->GetAttribute().ndc_coord[i].w,
 				   s_shader->GetAttribute().ndc_coord[i].y / s_shader->GetAttribute().ndc_coord[i].w,
 				   s_shader->GetAttribute().ndc_coord[i].z / s_shader->GetAttribute().ndc_coord[i].w,
 		};
 		
-		//DEBUG_INFO("pos   %d:  ", i); DEBUG_POS3(s_shader->GetAttribute().world_pos[i]);
+		//DEBUG_INFO("w     %d:  ", i); DEBUG_VALUE(z_value[i]);
 		//DEBUG_INFO("ndc   %d:  ", i); DEBUG_POS3(ndc[i]);
-		//DEBUG_INFO("src   %d:  ", i); DEBUG_POS2(s_shader->GetAttribute().screen_coord[i]);
-		
-	
 	}
-	//std::cout << s_shader->GetAttribute().ndc_coord[0].z / s_shader->GetAttribute().ndc_coord[0].w << "  " << s_shader->GetAttribute().ndc_coord[0].w << "\n";
-	//std::cout << s_shader->GetAttribute().ndc_coord[1].z / s_shader->GetAttribute().ndc_coord[1].w << "  " << s_shader->GetAttribute().ndc_coord[1].w << "\n";
-	//std::cout << s_shader->GetAttribute().ndc_coord[2].z / s_shader->GetAttribute().ndc_coord[2].w << "  " << s_shader->GetAttribute().ndc_coord[2].w << "\n";
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0};
 	GetBoundingBox(min_box, max_box);
