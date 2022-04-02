@@ -47,10 +47,12 @@ struct Uniform
 	vec3 view_pos;
 };
 
+#define MAX_VERTEXES 10
+
 struct Attribute
 {
 	vec3 pos[3];
-	vec4 ndc_coord[3]; // NDC
+	vec4 ndc_coord[3];
 	vec3 world_pos[3];
 	vec2 screen_coord[3];
 	vec2 texcoord[3];
@@ -59,17 +61,38 @@ struct Attribute
 };
 
 
+struct ClipAttribute
+{
+	vec3 pos[MAX_VERTEXES];
+	vec4 ndc_coord[MAX_VERTEXES]; 
+	vec3 world_pos[MAX_VERTEXES];
+	vec2 screen_coord[MAX_VERTEXES];
+	vec2 texcoord[MAX_VERTEXES];
+	Color colors[MAX_VERTEXES];
+	vec3 normals[MAX_VERTEXES];
+};
+
+
 class IShader
 {
-public:
-	int m_cur_face_idx;
-	Uniform m_uniform;
+private:
 	Attribute m_attribute;
+	ClipAttribute m_clip_attribute[2];
+	Uniform m_uniform;
+public:
+	int cur_attr_idx = 0;
+	int m_cur_face_idx;
+	int vertex_num = 3;
 	Color frag_color;
 	DirLight m_dir_light;
 	std::shared_ptr<Cubemap> m_cubemap;
 	virtual void VertexShader(int nvertex) {}
 	virtual bool FragmentShader(float alpha, float beta, float gamma) { return true; }	
+
+	virtual void ResetAttribute() { cur_attr_idx = 0; }
+	virtual Attribute& GetAttribute() { return m_attribute; }
+	virtual ClipAttribute& GetClipAttribute() { return m_clip_attribute[cur_attr_idx]; }
+	virtual Uniform& GetUniform() { return m_uniform; }
 };
 
 class Shader_HelloTriangle : public IShader
