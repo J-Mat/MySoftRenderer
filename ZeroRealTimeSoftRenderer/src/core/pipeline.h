@@ -11,6 +11,7 @@ using VAO = Mesh;
 
 enum ClipPlane
 {
+	CP_WPlane,
 	CP_Left,
 	CP_Right,
 	CP_Top,
@@ -37,11 +38,12 @@ public:
 	static void HomoClipping();
 
 	static void InitShaderAttribute(int face_idx);
-	static void CommitAttribute(int start_idx);
+	static void CommitAttribute(int v0, int v1, int v2);
 	static void RunVertexStage();
 	static bool VisibleClip();
 	static ivec2 GetSreenCoord(vec4 ndc_coord);
 	static vec3 GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P);
+	static float GetInsectRatio(vec4 pre_vertex, vec4 cur_vertex, ClipPlane plane);
 	static void GetBoundingBox(ivec2& min_box, ivec2& max_box);
 	static void RunFragmentStage(); // »­Èý½ÇÐÎ
 

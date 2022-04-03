@@ -92,6 +92,7 @@ public:
 	virtual void ResetAttribute() { cur_attr_idx = 0; }
 	virtual Attribute& GetAttribute() { return m_attribute; }
 	virtual ClipAttribute& GetClipAttribute() { return m_clip_attribute[cur_attr_idx]; }
+	virtual ClipAttribute& GetClipAttributeByIndex(int cur_idx) { return m_clip_attribute[cur_idx]; }
 	virtual Uniform& GetUniform() { return m_uniform; }
 };
 

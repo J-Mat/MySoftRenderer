@@ -7,28 +7,49 @@
 
 void Scene_HelloTriangle::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::shared_ptr<ZBuffer> z_buffer)
 {
-	int cur_attr_idx = 0;
 	m_shader = std::make_shared<Shader_HelloTriangle>();
+	m_shader->ResetAttribute();
 	Pipeline::BindShader(m_shader);
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
-	vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {0.5, -0.5, 0, 1.0} };
-	m_shader->GetAttribute().ndc_coord[0] = ndc_coord[0];
-	m_shader->GetAttribute().ndc_coord[1] = ndc_coord[1];
-	m_shader->GetAttribute().ndc_coord[2] = ndc_coord[2];
+	vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {2.0, -0.5, 0, 1.0} };
+	m_shader->GetClipAttribute().ndc_coord[0] = ndc_coord[0];
+	m_shader->GetClipAttribute().ndc_coord[1] = ndc_coord[1];
+	m_shader->GetClipAttribute().ndc_coord[2] = ndc_coord[2];
 
 	Color colors[3] = {{1.0f, 0.0f, 0.0f, 1.0}, 
 						  {0.0f, 1.0f, 0.0f, 1.0},
 						  {0.0f, 0.0f, 1.0f, 1.0}};
-	m_shader->GetAttribute().colors[0] = colors[0];
-	m_shader->GetAttribute().colors[1] = colors[1];
-	m_shader->GetAttribute().colors[2] = colors[2];
+	m_shader->GetClipAttribute().colors[0] = colors[0];
+	m_shader->GetClipAttribute().colors[1] = colors[1];
+	m_shader->GetClipAttribute().colors[2] = colors[2];
 }
 
 void Scene_HelloTriangle::Render(float delta_time)
 {
+	m_shader->ResetAttribute();
+	static vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {2, -0.5, 0, 1.0} };
+	m_shader->GetClipAttribute().ndc_coord[0] = ndc_coord[0];
+	m_shader->GetClipAttribute().ndc_coord[1] = ndc_coord[1];
+	m_shader->GetClipAttribute().ndc_coord[2] = ndc_coord[2];
+
+	static Color colors[3] = {{1.0f, 0.0f, 0.0f, 1.0}, 
+						  {0.0f, 1.0f, 0.0f, 1.0},
+						  {0.0f, 0.0f, 1.0f, 1.0}};
+	m_shader->GetClipAttribute().colors[0] = colors[0];
+	m_shader->GetClipAttribute().colors[1] = colors[1];
+	m_shader->GetClipAttribute().colors[2] = colors[2];
+
 	Pipeline::RunVertexStage();
-	Pipeline::RunFragmentStage();
+	Pipeline::GetBindShader()->vertex_num = 3;
+	//test
+	Pipeline::HomoClipping();
+	int vertex_num = Pipeline::GetBindShader()->vertex_num;
+	for (int i = 0; i < vertex_num - 2; ++i)
+	{
+		Pipeline::CommitAttribute(0, i + 1, i + 2);
+		Pipeline::RunFragmentStage();
+	}
 }
 
 
@@ -78,7 +99,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// Па»ъ
-	const vec3 eye(0, 0, -3);
+	const vec3 eye(0, 0, 4);
 	const vec3 target(0, 0, 1);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
@@ -102,7 +123,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	meshes[1] = std::make_shared<Mesh>(mesh_names[1], true);
 	shaders[1] = std::make_shared<Shader_Skybox>();
 	
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(meshes[i], shaders[i]);
 		m_render_commands.push_back(command);

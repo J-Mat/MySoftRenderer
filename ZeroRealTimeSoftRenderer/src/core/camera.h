@@ -15,7 +15,7 @@ const float SENSITIVITY = 0.1f;
 struct CameraSettings
 {
 	CameraSettings() = default;
-	float fovy = 60.0f;
+	float fovy = 90.0f;
 	float aspect = 4.0f / 3.0f;
 	vec3 world_up = {0.0f, 1.0f, 0.0f};
 	float speed = SPEED;

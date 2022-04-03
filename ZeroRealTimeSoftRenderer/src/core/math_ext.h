@@ -4,6 +4,7 @@
 /*
 * 做一个math的中间层，手撸投影矩阵变换，达到学习的目的（其实glm里啥都有）
 */
+#define EPSILON 1e-4f
 namespace Math
 {
 	using namespace glm;

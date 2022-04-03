@@ -29,10 +29,36 @@ vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const
 	return { -1, 1, 1 };
 }
 
+float Pipeline::GetInsectRatio(vec4 pre_vertex, vec4 cur_vertex, ClipPlane plane)
+{
+	switch (plane)
+	{
+	case CP_WPlane:
+		return (pre_vertex.w - EPSILON) / (pre_vertex.w - cur_vertex.w);
+	case CP_Left:
+		return (pre_vertex.w + pre_vertex.x) / ((pre_vertex.w + pre_vertex.x) - (cur_vertex.w + cur_vertex.x));
+	case CP_Right:
+		return (pre_vertex.w - pre_vertex.x) / ((pre_vertex.w - pre_vertex.x) - (cur_vertex.w - cur_vertex.x));
+	case CP_Down:
+		return (pre_vertex.w + pre_vertex.y) / ((pre_vertex.w + pre_vertex.y) - (cur_vertex.w + cur_vertex.y));
+	case CP_Top:
+		return (pre_vertex.w - pre_vertex.y) / ((pre_vertex.w - pre_vertex.y) - (cur_vertex.w - cur_vertex.y));
+	case CP_Front:
+		return (pre_vertex.w + pre_vertex.z) / ((pre_vertex.w + pre_vertex.z) - (cur_vertex.w + cur_vertex.z));
+	case CP_Back:
+		return (pre_vertex.w - pre_vertex.z) / ((pre_vertex.w - pre_vertex.z) - (cur_vertex.w - cur_vertex.z));
+	default:
+		break;
+	}
+	return 0.0f;
+}
+
 bool Pipeline::IsInsidePlane(ClipPlane plane, vec4 ndc_vertex)
 {
 	switch (plane)
 	{
+	case CP_WPlane:
+		return ndc_vertex.w >= EPSILON;
 	case CP_Left:
 		return -ndc_vertex.w <= ndc_vertex.x;
 		break;
@@ -62,38 +88,74 @@ int Pipeline::ClipThePlane(ClipPlane plane)
 {
 	int input = s_shader->m_cur_face_idx;
 	int output = (input ^ 1);
+	int clip_size = 0;
+	auto& input_att = s_shader->GetClipAttributeByIndex(input);
+	auto& output_att = s_shader->GetClipAttributeByIndex(output);
 	for (int i = 0; i < s_shader->vertex_num; ++i)
 	{
-		int first_idx = i;
-		int second_idx = (i + 1) % s_shader->vertex_num;
+		int cur_idx = i;
+		int pre_idx = (i - 1 + s_shader->vertex_num) % s_shader->vertex_num;
 		
-		bool first_in_plane = IsInsidePlane(plane, s_shader->GetClipAttribute().ndc_coord[first_idx]);
-		bool second_in_plane = IsInsidePlane(plane, s_shader->GetClipAttribute().ndc_coord[second_idx]);
+		vec4 cur_vertex = input_att.ndc_coord[cur_idx];
+		vec4 pre_vertex = input_att.ndc_coord[pre_idx];
+		
+		bool cur_in_plane = IsInsidePlane(plane, cur_vertex);
+		bool pre_in_plane = IsInsidePlane(plane, pre_vertex);
 		
 		// ÓÐ´©²å
-		if (first_idx != second_idx)
+		if (cur_in_plane != pre_in_plane)
 		{
+			float ratio = GetInsectRatio(pre_vertex, cur_vertex, plane);
+			output_att.ndc_coord[clip_size] = mix(input_att.ndc_coord[pre_idx], input_att.ndc_coord[cur_idx], ratio);
+			output_att.screen_coord[clip_size] = mix(input_att.screen_coord[pre_idx], input_att.screen_coord[cur_idx], ratio);
+			output_att.world_pos[clip_size] = mix(input_att.world_pos[pre_idx], input_att.world_pos[cur_idx], ratio);
+			output_att.texcoord[clip_size] = mix(input_att.texcoord[pre_idx], input_att.texcoord[cur_idx], ratio);
+			output_att.normals[clip_size] = mix(input_att.normals[pre_idx], input_att.normals[cur_idx], ratio);
+			output_att.colors[clip_size] = mix(input_att.colors[pre_idx], input_att.colors[cur_idx], ratio);
+			
+			/*
+			DEBUG_INFO("-------------------------------------------\n"); 
+			DEBUG_INFO("ndc:  "); DEBUG_POS4(output_att.ndc_coord[clip_size]);
+			DEBUG_INFO("src:  "); DEBUG_POS2(output_att.screen_coord[clip_size]);
+			DEBUG_INFO("-------------------------------------------\n"); 
+			*/
+
+			clip_size++;
 		}
-	
+		
+		if (cur_in_plane)
+		{
+			output_att.ndc_coord[clip_size] = input_att.ndc_coord[cur_idx];
+			output_att.screen_coord[clip_size] = input_att.screen_coord[cur_idx];
+			output_att.world_pos[clip_size] = input_att.world_pos[cur_idx];
+			output_att.texcoord[clip_size] = input_att.texcoord[cur_idx];
+			output_att.normals[clip_size] = input_att.normals[cur_idx];
+			output_att.colors[clip_size] = input_att.colors[cur_idx];
+
+
+			/*
+			DEBUG_INFO("-------------------------------------------\n"); 
+			DEBUG_INFO("ndc:  "); DEBUG_POS4(output_att.ndc_coord[clip_size]);
+			DEBUG_INFO("src:  "); DEBUG_POS2(output_att.screen_coord[clip_size]);
+			DEBUG_INFO("-------------------------------------------\n"); 
+			*/
+
+			clip_size++;
+		}
 	}
+	
+	s_shader->vertex_num = clip_size;
+	s_shader->m_cur_face_idx = output;
+	//DEBUG_INFO("\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n");
 	return 0;
 }
 
 void Pipeline::HomoClipping()
 {
-	for (int vertex_idx = 0; vertex_idx < 3; ++vertex_idx)
+	for (int plane = ClipPlane::CP_Left; plane < ClipPlane::CP_PlaneNum; ++plane)
 	{
-		vec4 ndc = s_shader->GetClipAttribute().ndc_coord[vertex_idx];
-		for (int plane = ClipPlane::CP_Left; plane < ClipPlane::CP_PlaneNum; ++plane)
-		{
-			
-			if (!IsInsidePlane((ClipPlane)plane, ndc))
-			{
-				s_shader->vertex_num = 0;
-				return;
-			}
-		}
-	}
+		ClipThePlane((ClipPlane)plane);
+	} 
 }
 
 void Pipeline::InitShaderAttribute(int face_idx)
@@ -107,18 +169,32 @@ void Pipeline::InitShaderAttribute(int face_idx)
 	}
 }
 
-void Pipeline::CommitAttribute(int start_idx)
+void Pipeline::CommitAttribute(int v0, int v1, int v2)
 {
+	int indexes[3] = { v0, v1, v2 };
 	for (int i = 0; i < 3; ++i)
 	{
-		s_shader->GetAttribute().pos[i] = s_shader->GetClipAttribute().pos[start_idx + i];
-		s_shader->GetAttribute().ndc_coord[i] = s_shader->GetClipAttribute().ndc_coord[start_idx + i];
-		s_shader->GetAttribute().world_pos[i] = s_shader->GetClipAttribute().world_pos[start_idx + i];
-		s_shader->GetAttribute().screen_coord[i] = s_shader->GetClipAttribute().screen_coord[start_idx + i];
-		s_shader->GetAttribute().texcoord[i] = s_shader->GetClipAttribute().texcoord[start_idx + i];
-		s_shader->GetAttribute().colors[i] = s_shader->GetClipAttribute().colors[start_idx + i];
-		s_shader->GetAttribute().normals[i] = s_shader->GetClipAttribute().normals[start_idx + i];
+		s_shader->GetAttribute().pos[i] = s_shader->GetClipAttribute().pos[indexes[i]];
+		s_shader->GetAttribute().ndc_coord[i] = s_shader->GetClipAttribute().ndc_coord[indexes[i]];
+		s_shader->GetAttribute().world_pos[i] = s_shader->GetClipAttribute().world_pos[indexes[i]];
+		s_shader->GetAttribute().screen_coord[i] = s_shader->GetClipAttribute().screen_coord[indexes[i]];
+		s_shader->GetAttribute().texcoord[i] = s_shader->GetClipAttribute().texcoord[indexes[i]];
+		s_shader->GetAttribute().colors[i] = s_shader->GetClipAttribute().colors[indexes[i]];
+		s_shader->GetAttribute().normals[i] = s_shader->GetClipAttribute().normals[indexes[i]];
+
 	}
+	/*
+	auto& output_att = s_shader->GetAttribute();
+	DEBUG_INFO("-------------------------------------------\n");
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[0]);
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[1]);
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[2]);
+
+	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[0]);
+	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[1]);
+	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[2]);
+	DEBUG_INFO("-------------------------------------------\n");
+	*/
 }
 
 void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
@@ -137,6 +213,7 @@ void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
 
 void Pipeline::RunVertexStage()
 {
+	s_shader->ResetAttribute();
 	for (int i = 0; i < 3; i++)
 	{
 		s_shader->VertexShader(i);
