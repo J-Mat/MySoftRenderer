@@ -11,14 +11,13 @@ using VAO = Mesh;
 
 enum ClipPlane
 {
-	CP_WPlane,
-	CP_Left,
-	CP_Right,
-	CP_Top,
-	CP_Down,
-	CP_Front,
-	CP_Back,
-	CP_PlaneNum
+	W_PLANE,
+	X_RIGHT,
+	X_LEFT,
+	Y_TOP,
+	Y_BOTTOM,
+	Z_NEAR,
+	Z_FAR
 };
 
 class Pipeline

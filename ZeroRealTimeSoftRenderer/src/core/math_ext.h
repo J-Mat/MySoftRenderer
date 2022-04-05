@@ -31,10 +31,6 @@ namespace Math
  * note: my implementation is based on right-handed system, so it is a little different
  */
 	mat4 GetPerspectMat(float fovy, float aspect, float near, float far);
-	
-	vec2 GetSreenCoord(int screen_width, int screen_height, vec3 ndc_coord);
-
-
 
 	template <typename T>
 	T Remap(T value, T start1, T stop1, T start2, T stop2)

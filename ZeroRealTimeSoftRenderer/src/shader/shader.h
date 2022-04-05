@@ -15,16 +15,18 @@ struct DirLight
 	vec3 radiance = { 1.0f, 1.0f, 1.0f };
 };
 
+/*
 enum CubeFace
 {
-	CF_Right,
-	CF_Left,
-	CF_Top,
-	CF_Down,
-	CF_Back,
-	CF_Front,
-	CF_NumFace
+	W_PLANE,
+	X_RIGHT,
+	X_LEFT,
+	Y_TOP,
+	Y_BOTTOM,
+	Z_NEAR,
+	Z_FAR
 };
+*/
 
 typedef struct Cubemap
 {

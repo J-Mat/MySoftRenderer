@@ -45,7 +45,7 @@ add_executable(
 add_executable(
     "Test"
     WIN32
-    src/test/test.cpp
+    src/attachment_prj/test.cpp
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -56,4 +56,24 @@ set_directory_properties(PROPERTIES VS_STARTUP_PROJECT ZeroRealTimeSoftRender)
 
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${HEADERS} ${SOURCES})
+
+file(GLOB IRADIANCEMAP_INCLUDE
+    "src/core/core.h"
+    "src/core/debug.h"
+    "src/core/math_ext.h"
+    "src/core/math_ext.cpp"
+    "src/core/tgaimage.h"
+    "src/core/tgaimage.cpp"
+    "src/core/utils.h"
+    "src/core/utils.cpp"
+)
+
+
+add_executable(
+    "IrradianceMap"
+    ${IRADIANCEMAP_INCLUDE}
+    src/attachment_prj/iradiance_map.cpp
+)
+# 这个预计算项目是个控制台项目，跟上面的不一样
+set_target_properties("IrradianceMap" PROPERTIES LINK_FLAGS /SUBSYSTEM:CONSOLE)
 

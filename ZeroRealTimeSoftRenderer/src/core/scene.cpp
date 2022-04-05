@@ -59,7 +59,7 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// 相机
-	const vec3 eye(0, 0, -3);
+	const vec3 eye(0, 0, 3);
 	const vec3 target(0, 0, 0);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
@@ -99,7 +99,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// 相机
-	const vec3 eye(0, 0, 4);
+	const vec3 eye(0, 0, -2);
 	const vec3 target(0, 0, 1);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);

@@ -66,7 +66,7 @@ void ZBuffer::ClearZBuffer()
 		for (int j = 0; j < m_width; ++j)
 		{
 			int index = GetIndex(i, j); 	
-			FLOAT_BUF(m_buffer)[index] = 10000.0f;
+			FLOAT_BUF(m_buffer)[index] = 2.0f;
 		}
 	}
 }

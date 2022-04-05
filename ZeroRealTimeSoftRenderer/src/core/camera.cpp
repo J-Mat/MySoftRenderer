@@ -54,7 +54,7 @@ void Camera::BindInput()
 
 void Camera::UpdateMat()
 {
-	m_right = normalize(Math::cross(m_settings.world_up, m_forward));
+	m_right = normalize(Math::cross(m_forward, m_settings.world_up));
 	m_up = normalize(Math::cross(m_right, m_forward));
 	
 	m_lookat = m_eye + m_forward;

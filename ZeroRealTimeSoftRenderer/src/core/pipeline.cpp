@@ -9,8 +9,6 @@ std::shared_ptr<VAO>		  Pipeline::s_vao = nullptr;
 
 ivec2 Pipeline::GetSreenCoord(vec4 ndc_coord)
 {
-	//float y = Math::clamp(ndc_coord.y / ndc_coord.w, -5.0f, 5.0f);
-	//float x = Math::clamp(ndc_coord.x / ndc_coord.w, -5.0f, 5.0f);
 	return { (ndc_coord.y / ndc_coord.w / 2.0 + 0.5) * (s_color_buffer->GetHeight()),
 			 (ndc_coord.x / ndc_coord.w / 2.0 + 0.5) * (s_color_buffer->GetWidth())};
 }
@@ -29,56 +27,49 @@ vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const
 	return { -1, 1, 1 };
 }
 
-float Pipeline::GetInsectRatio(vec4 pre_vertex, vec4 cur_vertex, ClipPlane plane)
+float Pipeline::GetInsectRatio(vec4 prev, vec4 curv, ClipPlane plane)
 {
 	switch (plane)
 	{
-	case CP_WPlane:
-		return (pre_vertex.w - EPSILON) / (pre_vertex.w - cur_vertex.w);
-	case CP_Left:
-		return (pre_vertex.w + pre_vertex.x) / ((pre_vertex.w + pre_vertex.x) - (cur_vertex.w + cur_vertex.x));
-	case CP_Right:
-		return (pre_vertex.w - pre_vertex.x) / ((pre_vertex.w - pre_vertex.x) - (cur_vertex.w - cur_vertex.x));
-	case CP_Down:
-		return (pre_vertex.w + pre_vertex.y) / ((pre_vertex.w + pre_vertex.y) - (cur_vertex.w + cur_vertex.y));
-	case CP_Top:
-		return (pre_vertex.w - pre_vertex.y) / ((pre_vertex.w - pre_vertex.y) - (cur_vertex.w - cur_vertex.y));
-	case CP_Front:
-		return (pre_vertex.w + pre_vertex.z) / ((pre_vertex.w + pre_vertex.z) - (cur_vertex.w + cur_vertex.z));
-	case CP_Back:
-		return (pre_vertex.w - pre_vertex.z) / ((pre_vertex.w - pre_vertex.z) - (cur_vertex.w - cur_vertex.z));
+	case W_PLANE:
+		return (prev.w + EPSILON) / (prev.w - curv.w);
+	case X_RIGHT:
+		return (prev.w - prev.x) / ((prev.w - prev.x) - (curv.w - curv.x));
+	case X_LEFT:
+		return (prev.w + prev.x) / ((prev.w + prev.x) - (curv.w + curv.x));
+	case Y_TOP:
+		return (prev.w - prev.y) / ((prev.w - prev.y) - (curv.w - curv.y));
+	case Y_BOTTOM:
+		return (prev.w + prev.y) / ((prev.w + prev.y) - (curv.w + curv.y));
+	case Z_NEAR:
+		return (prev.w - prev.z) / ((prev.w - prev.z) - (curv.w - curv.z));
+	case Z_FAR:
+		return (prev.w + prev.z) / ((prev.w + prev.z) - (curv.w + curv.z));
 	default:
-		break;
+		return 0;
 	}
-	return 0.0f;
 }
 
 bool Pipeline::IsInsidePlane(ClipPlane plane, vec4 ndc_vertex)
 {
 	switch (plane)
 	{
-	case CP_WPlane:
-		return ndc_vertex.w >= EPSILON;
-	case CP_Left:
-		return -ndc_vertex.w <= ndc_vertex.x;
-		break;
-	case CP_Right:
-		return ndc_vertex.x <= ndc_vertex.w;
-		break;
-	case CP_Top:
-		return ndc_vertex.y <= ndc_vertex.w;
-		break;
-	case CP_Down:
-		return -ndc_vertex.w <= ndc_vertex.y;
-		break;
-	case CP_Front:
-		return -ndc_vertex.w <= ndc_vertex.z;
-		break;
-	case CP_Back:
-		return ndc_vertex.z <= ndc_vertex.w;	
-		break;
+	case W_PLANE:
+		return ndc_vertex.w <= -EPSILON;
+	case X_RIGHT:
+		return ndc_vertex.x >= ndc_vertex.w;
+	case X_LEFT:
+		return ndc_vertex.x <= -ndc_vertex.w;
+	case Y_TOP:
+		return ndc_vertex.y >= ndc_vertex.w;
+	case Y_BOTTOM:
+		return ndc_vertex.y <= -ndc_vertex.w;
+	case Z_NEAR:
+		return ndc_vertex.z >= ndc_vertex.w;
+	case Z_FAR:
+		return ndc_vertex.z <= -ndc_vertex.w;
 	default:
-		break;
+		return false;
 	}
 	return false;
 }
@@ -107,18 +98,10 @@ int Pipeline::ClipThePlane(ClipPlane plane)
 		{
 			float ratio = GetInsectRatio(pre_vertex, cur_vertex, plane);
 			output_att.ndc_coord[clip_size] = mix(input_att.ndc_coord[pre_idx], input_att.ndc_coord[cur_idx], ratio);
-			output_att.screen_coord[clip_size] = mix(input_att.screen_coord[pre_idx], input_att.screen_coord[cur_idx], ratio);
 			output_att.world_pos[clip_size] = mix(input_att.world_pos[pre_idx], input_att.world_pos[cur_idx], ratio);
 			output_att.texcoord[clip_size] = mix(input_att.texcoord[pre_idx], input_att.texcoord[cur_idx], ratio);
 			output_att.normals[clip_size] = mix(input_att.normals[pre_idx], input_att.normals[cur_idx], ratio);
 			output_att.colors[clip_size] = mix(input_att.colors[pre_idx], input_att.colors[cur_idx], ratio);
-			
-			/*
-			DEBUG_INFO("-------------------------------------------\n"); 
-			DEBUG_INFO("ndc:  "); DEBUG_POS4(output_att.ndc_coord[clip_size]);
-			DEBUG_INFO("src:  "); DEBUG_POS2(output_att.screen_coord[clip_size]);
-			DEBUG_INFO("-------------------------------------------\n"); 
-			*/
 
 			clip_size++;
 		}
@@ -126,33 +109,24 @@ int Pipeline::ClipThePlane(ClipPlane plane)
 		if (cur_in_plane)
 		{
 			output_att.ndc_coord[clip_size] = input_att.ndc_coord[cur_idx];
-			output_att.screen_coord[clip_size] = input_att.screen_coord[cur_idx];
 			output_att.world_pos[clip_size] = input_att.world_pos[cur_idx];
 			output_att.texcoord[clip_size] = input_att.texcoord[cur_idx];
 			output_att.normals[clip_size] = input_att.normals[cur_idx];
 			output_att.colors[clip_size] = input_att.colors[cur_idx];
 
-
-			/*
-			DEBUG_INFO("-------------------------------------------\n"); 
-			DEBUG_INFO("ndc:  "); DEBUG_POS4(output_att.ndc_coord[clip_size]);
-			DEBUG_INFO("src:  "); DEBUG_POS2(output_att.screen_coord[clip_size]);
-			DEBUG_INFO("-------------------------------------------\n"); 
-			*/
-
 			clip_size++;
 		}
 	}
+
 	
 	s_shader->vertex_num = clip_size;
 	s_shader->m_cur_face_idx = output;
-	//DEBUG_INFO("\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n");
 	return 0;
 }
 
 void Pipeline::HomoClipping()
 {
-	for (int plane = ClipPlane::CP_Left; plane < ClipPlane::CP_PlaneNum; ++plane)
+	for (int plane = ClipPlane::X_RIGHT; plane <= ClipPlane::Z_FAR; ++plane)
 	{
 		ClipThePlane((ClipPlane)plane);
 	} 
@@ -183,18 +157,6 @@ void Pipeline::CommitAttribute(int v0, int v1, int v2)
 		s_shader->GetAttribute().normals[i] = s_shader->GetClipAttribute().normals[indexes[i]];
 
 	}
-	/*
-	auto& output_att = s_shader->GetAttribute();
-	DEBUG_INFO("-------------------------------------------\n");
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[0]);
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[1]);
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[2]);
-
-	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[0]);
-	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[1]);
-	DEBUG_INFO("--scr:  "); DEBUG_POS2(output_att.screen_coord[2]);
-	DEBUG_INFO("-------------------------------------------\n");
-	*/
 }
 
 void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
@@ -217,8 +179,19 @@ void Pipeline::RunVertexStage()
 	for (int i = 0; i < 3; i++)
 	{
 		s_shader->VertexShader(i);
-		s_shader->GetClipAttribute().screen_coord[i] = GetSreenCoord(s_shader->GetClipAttribute().ndc_coord[i]);
 	}
+	
+/*
+	auto& output_att = s_shader->GetClipAttribute();
+	DEBUG_INFO("-------------------------------------------\n");
+	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[0]);
+	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[1]);
+	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[2]);
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[0]);
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[1]);
+	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[2]);
+	DEBUG_INFO("-------------------------------------------\n");
+*/
 }
 
 bool Pipeline::VisibleClip()
@@ -234,19 +207,25 @@ bool Pipeline::VisibleClip()
 
 void Pipeline::RunFragmentStage()
 {	
+	float w_value[3];
 	float z_value[3];
 	vec3 ndc[3];
 	//DEBUG_INFO("------------------------\n");
 	for (int i = 0; i <  3; ++i) 
 	{
-		z_value[i] = s_shader->GetAttribute().ndc_coord[i].w;
+		w_value[i] = s_shader->GetAttribute().ndc_coord[i].w;
+		z_value[i] = s_shader->GetAttribute().ndc_coord[i].z / w_value[i];
 		ndc[i] = { s_shader->GetAttribute().ndc_coord[i].x / s_shader->GetAttribute().ndc_coord[i].w,
 				   s_shader->GetAttribute().ndc_coord[i].y / s_shader->GetAttribute().ndc_coord[i].w,
 				   s_shader->GetAttribute().ndc_coord[i].z / s_shader->GetAttribute().ndc_coord[i].w,
 		};
+		s_shader->GetAttribute().screen_coord[i] = GetSreenCoord(s_shader->GetAttribute().ndc_coord[i]);
 		
-		//DEBUG_INFO("w     %d:  ", i); DEBUG_VALUE(z_value[i]);
-		//DEBUG_INFO("ndc   %d:  ", i); DEBUG_POS3(ndc[i]);
+		/*
+		DEBUG_INFO("w     %d:  ", i); DEBUG_VALUE(z_value[i]);
+		DEBUG_INFO("ndc   %d:  ", i); DEBUG_POS3(ndc[i]);
+		DEBUG_INFO("screen   %d:  ", i); DEBUG_POS2(s_shader->GetAttribute().screen_coord[i]);
+		*/
 	}
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0};
@@ -269,23 +248,29 @@ void Pipeline::RunFragmentStage()
 			if (barycentric_coord.x < 0.0f || barycentric_coord.y < 0.0f || barycentric_coord.z < 0.0f)
 			{
 				continue;
-			}
+			}	
 
-
-			// https://zhuanlan.zhihu.com/p/403259571 透视矫正插值
-			float alpha = barycentric_coord.x / z_value[0];
-			float beta = barycentric_coord.y / z_value[1];
-			float gamma = barycentric_coord.z / z_value[2];
-			float z_n = 1.0f / (alpha + beta + gamma);
-			alpha *= z_n;
-			beta *= z_n;
-			gamma *= z_n;
-
-			//float z_ba = Math::Remap<float>(GET_BA_VALUE(float, z_value), -1.0f, 1.0f, 0.0f, 1.0);
+			float alpha = barycentric_coord.x;
+			float beta = barycentric_coord.y;
+			float gamma = barycentric_coord.z;
 			float z_ba = GET_BA_VALUE(float, z_value);
-			if (s_zbuffer->WriteValue(P.x, P.y, z_ba) && s_shader->FragmentShader(alpha, beta, gamma))
+			
+			if (s_zbuffer->WriteValue(P.x, P.y, z_ba))
 			{
-				s_color_buffer->SetPixel(x, y, s_shader->frag_color);
+
+				// https://zhuanlan.zhihu.com/p/403259571 透视矫正插值
+				alpha = barycentric_coord.x / w_value[0];
+				beta = barycentric_coord.y / w_value[1];
+				gamma = barycentric_coord.z / w_value[2];
+				float z_n = 1.0f / (alpha + beta + gamma);
+				alpha *= z_n;
+				beta *= z_n;
+				gamma *= z_n;
+
+				if (s_shader->FragmentShader(alpha, beta, gamma))
+				{
+					s_color_buffer->SetPixel(x, y, s_shader->frag_color);
+				}
 			}
 		}
 	}

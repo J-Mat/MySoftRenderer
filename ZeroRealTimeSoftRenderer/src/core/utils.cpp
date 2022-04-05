@@ -23,58 +23,61 @@ vec3 Utils::TextureSample(vec2 texcorrd, TGAImage* image)
 
 void Utils::CalculateCubeMapUV(vec3 direction, vec2& texcoord, int& face_index)
 {
-	float ma = 0;
-	float sc = 0, tc = 0;
-	vec3 abs_dir = { fabs(direction.x), fabs(direction.y), fabs(direction.z) };
+	float ma = 0, sc = 0, tc = 0;
+	float abs_x = fabs(direction[0]), abs_y = fabs(direction[1]), abs_z = fabs(direction[2]);
 
-	if (abs_dir.x > abs_dir.y && abs_dir.x > abs_dir.z)	
+	if (abs_x > abs_y && abs_x > abs_z)			/* major axis -> x */
 	{
-		ma = abs_dir.x;
-		if (direction.x < .0f)				
+		ma = abs_x;
+		if (direction.x > 0)					/* positive x */
 		{
-			face_index = CubeFace::CF_Right;
+			face_index = 0;
 			sc = +direction.z;
 			tc = +direction.y;
 		}
-		else									
+		else									/* negative x */
 		{
-			face_index = CubeFace::CF_Left;
+			face_index = 1;
 			sc = -direction.z;
 			tc = +direction.y;
 		}
 	}
-	else if (abs_dir.y > abs_dir.x && abs_dir.y > abs_dir.z)	
+	else if (abs_y > abs_z)						/* major axis -> y */
 	{
-		ma = abs_dir.y;
-		if (direction.y > .0f)					
+		ma = abs_y;
+		if (direction.y > 0)					/* positive y */
 		{
-			face_index = CubeFace::CF_Top;
+			face_index = 2;
+			sc = +direction. x;
+			tc = +direction.z;
+		}
+		else									/* negative y */
+		{
+			face_index = 3;
 			sc = +direction.x;
 			tc = -direction.z;
 		}
-		else									
-		{
-			face_index = CubeFace::CF_Down;
-			sc = +direction.x;
-			tc = +direction.z;
-		}
 	}
-	else		
+	else										/* major axis -> z */
 	{
-		ma = abs_dir.z;
-		if (direction.z > .0f)				
+		ma = abs_z;
+		if (direction.z > 0)					/* positive z */
 		{
-			face_index = CubeFace::CF_Back;
+			face_index = 4;
 			sc = -direction.x;
 			tc = +direction.y;
 		}
-		else							
+		else									/* negative z */
 		{
-			face_index = CubeFace::CF_Front;
+			face_index = 5;
 			sc = +direction.x;
 			tc = +direction.y;
 		}
 	}
+
+	//uv[0] = (sc / ma + 1.0f) / 2.0f;
+	//uv[1] = (tc / ma + 1.0f) / 2.0f;
+
 
 	texcoord = {
 		Math::Remap<float>(sc / ma, -1.0f, 1.0f, 0.0f, 1.0), 
