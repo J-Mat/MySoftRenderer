@@ -2,8 +2,12 @@
 
 #include "math_ext.h"
 #include "tgaimage.h"
-#include "shader/shader.h"
 using namespace Math;
+
+typedef struct Cubemap
+{
+	TGAImage* faces[6] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+};
 
 namespace Utils
 {

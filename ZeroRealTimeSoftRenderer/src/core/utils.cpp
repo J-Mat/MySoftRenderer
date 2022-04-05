@@ -1,5 +1,4 @@
 #include "utils.h"
-#include "shader/shader.h"
 
 vec3 Utils::ConvertPixel2Color(TGAColor color)
 {

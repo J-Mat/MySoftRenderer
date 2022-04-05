@@ -28,10 +28,7 @@ enum CubeFace
 };
 */
 
-typedef struct Cubemap
-{
-	TGAImage* faces[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-};
+
 
 typedef struct iblmap
 {
