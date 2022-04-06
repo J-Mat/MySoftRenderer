@@ -1,5 +1,6 @@
 #pragma once
 #include "core.h"
+#include "utils.h"
 using namespace Math;
 
 struct Cubemap; // forward declaration

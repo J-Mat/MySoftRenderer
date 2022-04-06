@@ -28,7 +28,7 @@ void Scene_HelloTriangle::GenerateScene(std::shared_ptr<ColorBuffer> color_buffe
 void Scene_HelloTriangle::Render(float delta_time)
 {
 	m_shader->ResetAttribute();
-	static vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {2, -0.5, 0, 1.0} };
+	static vec4 ndc_coord[3] = { {0.0, 0.5, 0.0, 1.0}, {-0.5, -0.5, 0.0, 1.0}, {0.5, -0.5, 0, 1.0} };
 	m_shader->GetClipAttribute().ndc_coord[0] = ndc_coord[0];
 	m_shader->GetClipAttribute().ndc_coord[1] = ndc_coord[1];
 	m_shader->GetClipAttribute().ndc_coord[2] = ndc_coord[2];
@@ -41,15 +41,9 @@ void Scene_HelloTriangle::Render(float delta_time)
 	m_shader->GetClipAttribute().colors[2] = colors[2];
 
 	Pipeline::RunVertexStage();
-	Pipeline::GetBindShader()->vertex_num = 3;
-	//test
-	Pipeline::HomoClipping();
 	int vertex_num = Pipeline::GetBindShader()->vertex_num;
-	for (int i = 0; i < vertex_num - 2; ++i)
-	{
-		Pipeline::CommitAttribute(0, i + 1, i + 2);
-		Pipeline::RunFragmentStage();
-	}
+	Pipeline::CommitAttribute(0, 1, 2);
+	Pipeline::RunFragmentStage();
 }
 
 
