@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "math_ext.h"
 
 vec3 Utils::ConvertPixel2Color(TGAColor color)
 {
@@ -8,6 +9,14 @@ vec3 Utils::ConvertPixel2Color(TGAColor color)
 		res[2 - i] = (float)color[i] / 255.f;
 	}
 	return res;
+}
+
+TGAColor Utils::ConvertColor2Pixel(vec3 color)
+{
+	unsigned char  r = Math::min(color.x * 255.0f, 255.0f);
+	unsigned char  g = min(color.y * 255.0f, 255.0f);
+	unsigned char  b = min(color.z * 255.0f, 255.0f);
+	return { r, g, b };
 }
 
 vec3 Utils::TextureSample(vec2 texcorrd, TGAImage* image)

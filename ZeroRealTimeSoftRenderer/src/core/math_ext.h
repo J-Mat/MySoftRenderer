@@ -5,6 +5,11 @@
 * 做一个math的中间层，手撸投影矩阵变换，达到学习的目的（其实glm里啥都有）
 */
 #define EPSILON 1e-4f
+#define PI      3.1415926f
+#define TWO_PI  6.2831852f
+#define HALF_PI 1.5707963f
+#define INV_PI  0.3183098f
+
 namespace Math
 {
 	using namespace glm;

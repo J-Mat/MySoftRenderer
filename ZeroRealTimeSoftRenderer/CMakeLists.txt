@@ -66,6 +66,8 @@ file(GLOB IRADIANCEMAP_INCLUDE
     "src/core/tgaimage.cpp"
     "src/core/utils.h"
     "src/core/utils.cpp"
+    "src/core/mesh.h"
+    "src/core/mesh.cpp"
 )
 
 
