@@ -100,6 +100,32 @@ void GenerateIrradianceMap(TGAImage& image, Face face)
 	cout << face << endl;
 }
 
+void IrradianceMap()
+{
+	const char* faces[6] = { "px", "nx", "py", "ny", "pz", "nz" };
+	char paths[6][256];
+	std::thread threads[6];
+	TGAImage images[6];
+	for (int face_id = 0; face_id < 6; ++face_id)
+	{
+		sprintf(paths[face_id], "%s/i_%s.tga", "../res/temp", faces[face_id]);
+		images[face_id] = TGAImage(g_image_size, g_image_size, TGAImage::RGB);
+
+		threads[face_id] = std::thread(GenerateIrradianceMap, std::ref(images[face_id]), Face(face_id));
+	}
+
+	for (int face_id = 0; face_id < 6; ++face_id)
+	{
+		threads[face_id].join();
+	}
+
+	std::thread tt;
+	for (int face_id = 0; face_id < 6; ++face_id)
+	{
+		images[face_id].flip_vertically();
+		images[face_id].write_tga_file(paths[face_id]);
+	}
+}
 // 这里是整个项目最难理解的一部分，为了达到更好的渲染效果，上IBL
 // 上强度之前，要先了解蒙特卡洛积分原理
 
@@ -122,29 +148,10 @@ int main()
 {
 	g_skybox_mesh = std::make_shared<Mesh>("../res/skybox4/box.obj", true);
 
-	const char* faces[6] = { "px", "nx", "py", "ny", "pz", "nz" };
-	char paths[6][256];
-	std::thread threads[6];
-	TGAImage images[6];
-	for (int face_id = 0; face_id < 6; ++face_id)
-	{
-		sprintf(paths[face_id], "%s/i_%s.tga", "../res/temp", faces[face_id]);
-		images[face_id] = TGAImage(g_image_size, g_image_size, TGAImage::RGB);
-		
-		threads[face_id] = std::thread(GenerateIrradianceMap, std::ref(images[face_id]), Face(face_id));
-	}
-	
-	for (int face_id = 0; face_id < 6; ++face_id)
-	{
-		threads[face_id].join();
-	}
+	IrradianceMap();
 
-	for (int face_id = 0; face_id < 6; ++face_id)
-	{
-		images[face_id].flip_vertically();
-		images[face_id].write_tga_file(paths[face_id]);
-	}
-	
+
+
 	cout << "Finish!!" << endl;
 	return 0;
 }
