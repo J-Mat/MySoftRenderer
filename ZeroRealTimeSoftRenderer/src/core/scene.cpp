@@ -103,7 +103,8 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 
 	std::vector<char*> mesh_names =
 	{
-		"../res/gun/Cerberus.obj",
+		//"../res/gun/Cerberus.obj",
+		"../res/helmet/helmet.obj",
 		"../res/skybox4/box.obj",
 	};
 
@@ -112,7 +113,8 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	
 
 	meshes[0] = std::make_shared<Mesh>(mesh_names[0]);
-	shaders[0] = std::make_shared<Shader_PBR>();
+	shaders[0] = std::make_shared<Shader_IBL>();
+	shaders[0]->LoadIBLMap("../res/common2");
 	
 	meshes[1] = std::make_shared<Mesh>(mesh_names[1], true);
 	shaders[1] = std::make_shared<Shader_Skybox>();

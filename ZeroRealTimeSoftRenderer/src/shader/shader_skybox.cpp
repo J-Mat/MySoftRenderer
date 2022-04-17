@@ -22,7 +22,7 @@ void Shader_Skybox::VertexShader(int vertex_idx)
 
 	// 天空盒的深度一直是最远的
 	//xyww trick here that ensures the depth value of the rendered cube fragments always end up at 1.0, the maximum depth value
-	GetClipAttribute().ndc_coord[vertex_idx] = { gl_pos.x, gl_pos.y, gl_pos.w, gl_pos.w };
+	GetClipAttribute().ndc_coord[vertex_idx] = { gl_pos.x, gl_pos.y, -gl_pos.w, gl_pos.w };
 }
 
 bool Shader_Skybox::FragmentShader(float alpha, float beta, float gamma)

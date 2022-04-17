@@ -6,6 +6,7 @@
 #include "mesh.h"
 #include <thread>
 #include "debug.h"
+#include "utils.h"
 using namespace std;
 using namespace Math;
 
@@ -118,7 +119,7 @@ void GenerateIrradianceMap(TGAImage& image, Face face)
 					vec3 sample_dir = { sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta) };
 					sample_dir = sample_dir.x * right + sample_dir.y * up + sample_dir.z * dir; //转到对应的空间
 					normalize(sample_dir);
-					vec3 color = Utils::CubemapSample(sample_dir, g_skybox_mesh->m_environment_map);
+					vec3 color = Utils::CubemapSample(sample_dir, *g_skybox_mesh->m_environment_map);
 					irradiance += color * sin(theta) * cos(theta);
 					++cnt;
 				}
@@ -133,13 +134,12 @@ void GenerateIrradianceMap(TGAImage& image, Face face)
 
 void IrradianceMap()
 {
-	const char* faces[6] = { "px", "nx", "py", "ny", "pz", "nz" };
 	char paths[6][256];
 	std::thread threads[6];
 	TGAImage images[6];
 	for (int face_id = 0; face_id < 6; ++face_id)
 	{
-		sprintf(paths[face_id], "%s/i_%s.tga", "../res/temp", faces[face_id]);
+		sprintf(paths[face_id], "%s/i_%s.tga", "../res/temp", Cubemap::faces_name[face_id]);
 		images[face_id] = TGAImage(g_image_size, g_image_size, TGAImage::RGB);
 
 		threads[face_id] = std::thread(GenerateIrradianceMap, std::ref(images[face_id]), Face(face_id));
@@ -204,7 +204,7 @@ void GeneratePreFilterMap(Face face_id, int mip_level, int image_size, TGAImage&
 				vec3 h = ImportanceSampleGGX(xi, normal, roughness);
 				vec3 l = normalize(2.0f * dot(v, h) * h - v);
 				
-				vec3 radiance = Utils::CubemapSample(l, g_skybox_mesh->m_environment_map);
+				vec3 radiance = Utils::CubemapSample(l, *g_skybox_mesh->m_environment_map);
 				float n_dot_l = fmax(dot(normal, l), 0.9f);
 				if (n_dot_l > 0.0f)
 				{
@@ -222,7 +222,6 @@ void GeneratePreFilterMap(Face face_id, int mip_level, int image_size, TGAImage&
 
 void PreFilterMiplevel()
 {
-	const char* faces[6] = { "px", "nx", "py", "ny", "pz", "nz" };
 	char paths[6][256];
 	TGAImage images[6];
 	
@@ -235,7 +234,7 @@ void PreFilterMiplevel()
 		image_mipmap_size = std::max(64, image_mipmap_size);
 		for (int i = 0; i < 6; ++i)
 		{
-			sprintf(paths[i], "%s/m%d_%s.tga", "../res/temp", mipmap_level, faces[i]);
+			sprintf(paths[i], "%s/m%d_%s.tga", "../res/temp", mipmap_level, Cubemap::faces_name[i]);
 			images[i] = TGAImage(image_mipmap_size, image_mipmap_size, TGAImage::RGB);
 		}
 

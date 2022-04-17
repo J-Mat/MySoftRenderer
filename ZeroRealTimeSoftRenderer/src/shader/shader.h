@@ -1,6 +1,7 @@
 #pragma once
 #include "mesh.h"
-#include "framebuffer.h"
+#include "math_ext.h"
+#include <string>
 using namespace Math;
 
 //  LearnOpenGL 6.multiple_lights
@@ -29,14 +30,13 @@ enum CubeFace
 */
 
 
-
-typedef struct iblmap
+struct IBLMap
 {
-	int mip_levels;
-	Cubemap* irradiance_map;
+	int mip_levels = 0;
+	Cubemap* irradiance_map = nullptr;
 	Cubemap* prefilter_maps[15];
-	TGAImage* brdf_lut;
-} iblmap_t;
+	TGAImage brdf_lut;
+};
 
 struct Uniform
 {
@@ -73,13 +73,26 @@ struct ClipAttribute
 
 #define TEXTURE(Type, texcoord)  Pipeline::GetBindVAO()->Type(texcoord)
 
+
+
 class IShader
 {
 private:
 	Attribute m_attribute;
 	ClipAttribute m_clip_attribute[2];
 	Uniform m_uniform;
+	IBLMap m_ibl_map;
+
 public:
+	static void GammaCorrection(vec3 &color) { color = pow(color, vec3(1.0 / 2.2)); };
+	virtual ~IShader() 
+	{
+		if (m_ibl_map.mip_levels > 0)
+		{
+			delete[] m_ibl_map.prefilter_maps;
+			delete m_ibl_map.irradiance_map;
+		}
+	}
 	int cur_attr_idx = 0;
 	int m_cur_face_idx;
 	int vertex_num = 3;
@@ -94,6 +107,40 @@ public:
 	virtual ClipAttribute& GetClipAttribute() { return m_clip_attribute[cur_attr_idx]; }
 	virtual ClipAttribute& GetClipAttributeByIndex(int cur_idx) { return m_clip_attribute[cur_idx]; }
 	virtual Uniform& GetUniform() { return m_uniform; }
+	virtual IBLMap& GetIBLMap() { return m_ibl_map; }
+	virtual void LoadIBLMap(char* folder)
+	{
+		std::vector<std::string> paths;
+		paths.resize(6);
+
+		m_ibl_map.mip_levels = 10;
+
+		/* diffuse environment map */
+		for (int face_id = 0; face_id < 6; face_id++)
+		{
+			char path[256];
+			sprintf(path, "%s/i_%s.tga", folder, Cubemap::GetFaceName()[face_id]);
+			paths[face_id] = path;
+		}
+		m_ibl_map.irradiance_map = new Cubemap();
+		Utils::LoadCubmapFromFiles(paths, m_ibl_map.irradiance_map);
+
+		/* specular environment maps */
+		for (int i = 0; i < m_ibl_map.mip_levels; i++) 
+		{
+			for (int j = 0; j < 6; j++) 
+			{
+				char path[256];
+				sprintf(path, "%s/m%d_%s.tga", folder, i, Cubemap::GetFaceName()[j]);
+				paths[j] = path;
+			}
+			m_ibl_map.prefilter_maps[i] = new Cubemap();
+			Utils::LoadCubmapFromFiles(paths, m_ibl_map.prefilter_maps[i]);
+		}
+
+		/* brdf lookup texture */
+		Utils::LoadTextureFromFile(std::string("../res/common/BRDF_LUT.tga"), &m_ibl_map.brdf_lut);
+	}
 };
 
 class Shader_HelloTriangle : public IShader
@@ -119,6 +166,14 @@ public:
 	virtual void VertexShader(int vetex_idx);
 	virtual bool FragmentShader(float alpha, float beta, float gamma);
 };
+
+class Shader_IBL : public IShader
+{
+public:
+	virtual void VertexShader(int vetex_idx);
+	virtual bool FragmentShader(float alpha, float beta, float gamma);
+};
+
 
 class Shader_Skybox : public IShader
 {

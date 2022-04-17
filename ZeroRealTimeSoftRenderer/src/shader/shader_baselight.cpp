@@ -4,43 +4,6 @@
 #include "utils.h"
 
 
-vec3 Fresenlschlick(float h_dot_v, const vec3& f0)
-{
-	return f0 + (vec3(1.0f) - f0) * pow(1.0f - h_dot_v, 5.0f);
-}
-
-
-float DistributeGGX(vec3 n, vec3 h, float roughness)
-{
-	float a2 = roughness * roughness;
-	float n_dot_h = Math::max(dot(n, h), 0.0f);
-
-	float nom = a2;
-	float denom = n_dot_h * n_dot_h * (a2 - 1.0f) + 1.0f;
-	denom = Math::pi<float>() * denom * denom;
-
-	return nom / denom;
-}
-
-
-float GeometrySchlickGGX(float n_dot_v, float k)
-{
-	float nom = n_dot_v;
-	float denom = n_dot_v * (1.0f - k) + k;
-	return nom / denom;
-}
-
-
-float GeometrySmith(vec3 n, vec3 v, vec3 l, float k)
-{
-	float n_dot_v = Math::max(dot(n, v), 0.0f);
-	float n_dot_l = Math::max(dot(n, l), 0.0f);
-	float ggx1 = GeometrySchlickGGX(n_dot_v, k);
-	float ggx2 = GeometrySchlickGGX(n_dot_l, k);
-
-	return ggx1 * ggx2;
-}
-
 void Shader_BaseLight::VertexShader(int vertex_idx)
 {
 	const mat4& model = GetUniform().model_mat;

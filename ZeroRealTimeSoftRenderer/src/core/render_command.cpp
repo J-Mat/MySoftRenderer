@@ -18,7 +18,7 @@ void RenderCommand::Commit()
 		Pipeline::RunVertexStage();	
 		Pipeline::GetBindShader()->vertex_num = 3;
 		//test
-		Pipeline::HomoClipping();
+		//Pipeline::HomoClipping();
 		int vertex_num = Pipeline::GetBindShader()->vertex_num;
 		for (int i = 0; i < vertex_num - 2; ++i)
 		{
