@@ -71,6 +71,7 @@ struct ClipAttribute
 	vec3 normals[MAX_VERTEXES];
 };
 
+#define TEXTURE(Type, texcoord)  Pipeline::GetBindVAO()->Type(texcoord)
 
 class IShader
 {

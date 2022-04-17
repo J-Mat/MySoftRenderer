@@ -168,17 +168,17 @@ void Mesh::CreateMap(const char *filename)
 void Mesh::LoadCubemap(const char *filename)
 {
 	m_environment_map->faces[0] = new TGAImage();
-	LoadTexture(filename, "_right.tga", m_environment_map->faces[0]);
+	LoadTexture(filename, "_right1.tga", m_environment_map->faces[0]);
 	m_environment_map->faces[1] = new TGAImage();
-	LoadTexture(filename, "_left.tga", m_environment_map->faces[1]);
+	LoadTexture(filename, "_left1.tga", m_environment_map->faces[1]);
 	m_environment_map->faces[2] = new TGAImage();
-	LoadTexture(filename, "_top.tga", m_environment_map->faces[2]);
+	LoadTexture(filename, "_top1.tga", m_environment_map->faces[2]);
 	m_environment_map->faces[3] = new TGAImage();
-	LoadTexture(filename, "_bottom.tga", m_environment_map->faces[3]);
+	LoadTexture(filename, "_bottom1.tga", m_environment_map->faces[3]);
 	m_environment_map->faces[4] = new TGAImage();
-	LoadTexture(filename, "_back.tga", m_environment_map->faces[4]);
+	LoadTexture(filename, "_back1.tga", m_environment_map->faces[4]);
 	m_environment_map->faces[5] = new TGAImage();
-	LoadTexture(filename, "_front.tga", m_environment_map->faces[5]);
+	LoadTexture(filename, "_front1.tga", m_environment_map->faces[5]);
 }
 
 int Mesh::GetVertexSize() 

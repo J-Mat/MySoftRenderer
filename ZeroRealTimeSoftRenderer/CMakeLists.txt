@@ -72,10 +72,10 @@ file(GLOB IRADIANCEMAP_INCLUDE
 
 
 add_executable(
-    "IrradianceMap"
+    "PreCaculateTex"
     ${IRADIANCEMAP_INCLUDE}
-    src/attachment_prj/iradiance_map.cpp
+    src/attachment_prj/precaculate_tex.cpp
 )
 # 这个预计算项目是个控制台项目，跟上面的不一样
-set_target_properties("IrradianceMap" PROPERTIES LINK_FLAGS /SUBSYSTEM:CONSOLE)
+set_target_properties("PreCaculateTex" PROPERTIES LINK_FLAGS /SUBSYSTEM:CONSOLE)
 
