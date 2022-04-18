@@ -94,7 +94,6 @@ public:
 		}
 	}
 	int cur_attr_idx = 0;
-	int m_cur_face_idx;
 	int vertex_num = 3;
 	Color frag_color;
 	DirLight m_dir_light;
