@@ -7,10 +7,13 @@ std::shared_ptr<ZBuffer>      Pipeline::s_zbuffer = nullptr;
 std::shared_ptr<IShader>      Pipeline::s_shader = nullptr;
 std::shared_ptr<VAO>		  Pipeline::s_vao = nullptr;
 
-ivec2 Pipeline::GetSreenCoord(vec4 ndc_coord)
+glm::vec3 Pipeline::GetSreenCoord(vec4 ndc_coord)
 {
 	return { (ndc_coord.y / ndc_coord.w / 2.0 + 0.5) * (s_color_buffer->GetHeight()),
-			 (ndc_coord.x / ndc_coord.w / 2.0 + 0.5) * (s_color_buffer->GetWidth())};
+			 (ndc_coord.x / ndc_coord.w / 2.0 + 0.5) * (s_color_buffer->GetWidth()),
+				-ndc_coord.w
+		};
+
 }
 
 
@@ -197,9 +200,22 @@ bool Pipeline::VisibleClip()
 	return true;
 }
 
+/*
+static int is_back_facing(vec3 ndc_pos[3])
+{
+	vec3 a = ndc_pos[0];
+	vec3 b = ndc_pos[1];
+	vec3 c = ndc_pos[2];
+	float signed_area = a.x() * b.y() - a.y() * b.x() +
+		b.x() * c.y() - b.y() * c.x() +
+		c.x() * a.y() - c.y() * a.x();   //|AB AC|
+	return signed_area <= 0;
+}
+*/
 
 void Pipeline::RunFragmentStage()
 {	
+
 	float w_value[3];
 	float z_value[3];
 	vec3 ndc[3];
@@ -220,6 +236,8 @@ void Pipeline::RunFragmentStage()
 		DEBUG_INFO("screen   %d:  ", i); DEBUG_POS2(s_shader->GetAttribute().screen_coord[i]);
 		*/
 	}
+
+
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0};
 	GetBoundingBox(min_box, max_box);
@@ -247,11 +265,11 @@ void Pipeline::RunFragmentStage()
 			float beta = barycentric_coord.y;
 			float gamma = barycentric_coord.z;
 			float z_ba = GET_BA_VALUE(float, z_value);
+
 			
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba))
 			{
 
-				/*
 				// https://zhuanlan.zhihu.com/p/403259571 Í¸ÊÓ½ÃÕý²åÖµ
 				alpha = barycentric_coord.x / w_value[0];
 				beta = barycentric_coord.y / w_value[1];
@@ -260,12 +278,36 @@ void Pipeline::RunFragmentStage()
 				alpha *= z_n;
 				beta *= z_n;
 				gamma *= z_n;
-				*/
 
-				if (s_shader->FragmentShader(alpha, beta, gamma))
-				{
-					s_color_buffer->SetPixel(x, y, s_shader->frag_color);
-				}
+				Log::GetInstance()->OutString("screen-----------------------------\n");
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[0]);
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[1]);
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[2]);
+
+				Log::GetInstance()->OutString("normal-----------------------------\n");
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[0]);
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[1]);
+				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[2]);
+				
+				Log::GetInstance()->OutString("ndc-----------------------------\n");
+				Log::GetInstance()->Out_Pos3(ndc[0]);
+				Log::GetInstance()->Out_Pos3(ndc[1]);
+				Log::GetInstance()->Out_Pos3(ndc[2]);
+
+				Log::GetInstance()->OutString("ba-----------------------------\n");
+				Log::GetInstance()->Out_Pos3(barycentric_coord);
+
+				Log::GetInstance()->OutString("\n");
+
+				vec3 normal =  s_shader->GetAttribute().normals[0] * barycentric_coord.x +
+					s_shader->GetAttribute().normals[1] * barycentric_coord.y +
+					s_shader->GetAttribute().normals[2] * barycentric_coord.z;
+				s_color_buffer->SetPixel(x, y, vec4(normal, 1.0));
+
+				//if (s_shader->FragmentShader(alpha, beta, gamma))
+				//{
+					//s_color_buffer->SetPixel(x, y, s_shader->frag_color);
+				//}
 			}
 		}
 	}
