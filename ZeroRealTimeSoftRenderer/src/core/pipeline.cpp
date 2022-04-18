@@ -77,7 +77,7 @@ bool Pipeline::IsInsidePlane(ClipPlane plane, vec4 ndc_vertex)
 
 int Pipeline::ClipThePlane(ClipPlane plane)
 {
-	int input = s_shader->m_cur_face_idx;
+	int input = s_shader->cur_attr_idx;
 	int output = (input ^ 1);
 	int clip_size = 0;
 	auto& input_att = s_shader->GetClipAttributeByIndex(input);
@@ -120,13 +120,14 @@ int Pipeline::ClipThePlane(ClipPlane plane)
 
 	
 	s_shader->vertex_num = clip_size;
-	s_shader->m_cur_face_idx = output;
+	s_shader->cur_attr_idx = output;
+	
 	return 0;
 }
 
 void Pipeline::HomoClipping()
 {
-	for (int plane = ClipPlane::X_RIGHT; plane <= ClipPlane::Z_FAR; ++plane)
+	for (int plane = ClipPlane::W_PLANE; plane <= ClipPlane::Z_FAR; ++plane)
 	{
 		ClipThePlane((ClipPlane)plane);
 	} 
@@ -151,11 +152,9 @@ void Pipeline::CommitAttribute(int v0, int v1, int v2)
 		s_shader->GetAttribute().pos[i] = s_shader->GetClipAttribute().pos[indexes[i]];
 		s_shader->GetAttribute().ndc_coord[i] = s_shader->GetClipAttribute().ndc_coord[indexes[i]];
 		s_shader->GetAttribute().world_pos[i] = s_shader->GetClipAttribute().world_pos[indexes[i]];
-		s_shader->GetAttribute().screen_coord[i] = s_shader->GetClipAttribute().screen_coord[indexes[i]];
 		s_shader->GetAttribute().texcoord[i] = s_shader->GetClipAttribute().texcoord[indexes[i]];
 		s_shader->GetAttribute().colors[i] = s_shader->GetClipAttribute().colors[indexes[i]];
 		s_shader->GetAttribute().normals[i] = s_shader->GetClipAttribute().normals[indexes[i]];
-
 	}
 }
 
@@ -175,7 +174,6 @@ void  Pipeline::GetBoundingBox(ivec2& min_box, ivec2& max_box)
 
 void Pipeline::RunVertexStage()
 {
-	s_shader->ResetAttribute();
 	for (int i = 0; i < 3; i++)
 	{
 		s_shader->VertexShader(i);
@@ -197,11 +195,6 @@ void Pipeline::RunVertexStage()
 bool Pipeline::VisibleClip()
 {
 	return true;
-	vec3 face_normal = s_vao->FaceNormal(s_shader->m_cur_face_idx);
-	vec3 world_normal = vec3(s_shader->GetUniform().model_mat * vec4(face_normal, 0.0f));
-	const mat4& view_mat = s_shader->GetUniform().view_mat;
-	vec3 forward = { view_mat[2][0], view_mat[2][1], view_mat[2][2] };
-	return dot(forward, world_normal) > 0.0f;
 }
 
 
@@ -258,6 +251,7 @@ void Pipeline::RunFragmentStage()
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba))
 			{
 
+				/*
 				// https://zhuanlan.zhihu.com/p/403259571 Í¸ÊÓ½ÃÕý²åÖµ
 				alpha = barycentric_coord.x / w_value[0];
 				beta = barycentric_coord.y / w_value[1];
@@ -266,6 +260,7 @@ void Pipeline::RunFragmentStage()
 				alpha *= z_n;
 				beta *= z_n;
 				gamma *= z_n;
+				*/
 
 				if (s_shader->FragmentShader(alpha, beta, gamma))
 				{

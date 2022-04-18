@@ -1,7 +1,6 @@
 #include "camera.h"
 #include "input.h"
 #include "iostream"
-#include "debug.h"
 
 
 Camera::Camera(CameraSettings& settings) :
@@ -26,13 +25,11 @@ void Camera::OnLeftBtnDown()
 {
 	m_beg_forward = m_forward;
 	m_end_forward = m_forward;
-	DEBUG_INFO("OnLeftBtnDown\n");
 }
 
 void Camera::OnLeftBtnUp()
 {
 	m_forward = m_end_forward;
-	DEBUG_INFO("OnLeftBtnUp\n");
 }
 
 void Camera::Init(vec3 eye, vec3 lookat)
