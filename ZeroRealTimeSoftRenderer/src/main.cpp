@@ -22,17 +22,18 @@ public:
 	virtual void Startup()
 	{
 		//m_scene = std::make_shared<Scene_HelloTriangle>();
-		m_scene = std::make_shared<Scene_Skybox>();
-		//m_scene = std::make_shared<Scene_Model>();
+		//m_scene = std::make_shared<Scene_Skybox>();
+		m_scene = std::make_shared<Scene_Model>();
 		m_scene->GenerateScene(m_color_buffer, m_z_buffer);
 	}
 
 	virtual void Render(float delta_time)
 	{
-		m_color_buffer->ClearColorBuffer({0.0f, 0.0f, 0.0f, 1.0f});
-		m_z_buffer->ClearZBuffer();
-		m_scene->Render(delta_time);
-		DrawWindow(m_color_buffer);
+			m_color_buffer->ClearColorBuffer({ 0.0f, 0.0f, 0.0f, 1.0f });
+			m_z_buffer->ClearZBuffer();
+			m_scene->Render(delta_time);
+			DrawWindow(m_color_buffer);
+			first = false;
 	}
 	
 	virtual void ShutDown()
@@ -42,6 +43,7 @@ private:
 	std::shared_ptr<Scene> m_scene;
 	std::shared_ptr<ColorBuffer>  m_color_buffer;
 	std::shared_ptr<ZBuffer> m_z_buffer;
+	bool first = true;
 };
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
