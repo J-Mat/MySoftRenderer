@@ -46,7 +46,10 @@ private:
 	vec3 m_eye;
 	vec3 m_lookat;
 	vec3 m_forward;	
+	vec3 m_dir;
 	float  m_radius;
+	float m_phi;
+	float m_theta;
 	vec3 m_beg_forward;
 	vec3 m_end_forward;
 	vec3 m_right;

@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "input.h"
 #include "iostream"
+#include "debug.h"
 
 
 Camera::Camera(CameraSettings& settings) :
@@ -23,13 +24,10 @@ void Camera::UpdateCamera(float delta_time)
 
 void Camera::OnLeftBtnDown()
 {
-	m_beg_forward = m_forward;
-	m_end_forward = m_forward;
 }
 
 void Camera::OnLeftBtnUp()
 {
-	m_forward = m_end_forward;
 }
 
 void Camera::Init(vec3 eye, vec3 lookat)
@@ -37,8 +35,12 @@ void Camera::Init(vec3 eye, vec3 lookat)
 	m_eye = eye;
 	m_lookat = lookat;
 
-	m_forward = normalize(m_lookat - m_eye);
+	m_dir = normalize(m_eye - m_lookat);
+	m_forward = -m_dir;
+	m_radius = length(m_lookat - m_eye);
 	
+	m_phi = (float)atan2(m_dir.x, m_dir.z);
+	m_theta = (float)acos(m_dir.y);
 	UpdateMat();
 }
 
@@ -51,10 +53,11 @@ void Camera::BindInput()
 
 void Camera::UpdateMat()
 {
+	/*
 	m_right = normalize(Math::cross(m_forward, m_settings.world_up));
 	m_up = normalize(Math::cross(m_right, m_forward));
+	*/
 	
-	m_lookat = m_eye + m_forward;
 	m_view_mat = Math::GetLookAtMat(m_eye, m_lookat, m_settings.world_up);
 	switch (m_settings.camera_type)
 	{
@@ -72,40 +75,47 @@ void Camera::ProcessKeyboard(float delta_time)
 {
 	float velocity = m_settings.speed * delta_time;
 	if (Input::IsKeyPressed('W'))
+	{
 		m_eye += m_forward * velocity;
+		m_radius = length(m_eye - m_lookat);
+
+	
+		std::cout << m_radius << std::endl;
+	}
+	if (Input::IsKeyPressed('S'))
+	{
+		m_eye -= m_forward * velocity;
+		m_radius = length(m_eye - m_lookat);
+	}
+
+	/*
 	if (Input::IsKeyPressed('A'))
 		m_eye -= m_right * velocity;
-	if (Input::IsKeyPressed('S'))
-		m_eye -= m_forward * velocity;
 	if (Input::IsKeyPressed('D'))
 		m_eye += m_right * velocity;
 	if (Input::IsKeyPressed('Q'))
 		m_eye += m_settings.world_up * velocity;
 	if (Input::IsKeyPressed('E'))
 		m_eye -= m_settings.world_up * velocity;
+	*/
 }
 
 
 void Camera::ProcessMouseMovement(float delta_time)
 {
-	vec2 mouse_offset = Input::GetMouseOffset() * m_settings.mouse_sensivity;
+	vec2 mouse_offset = Input::GetMouseOffset() * m_settings.mouse_sensivity * delta_time;
 
-	// 加 0 是对向量操作，  加 1 是对点操作
-	mat4 yaw_mat = mat4(1.0f);
-	yaw_mat = Math::rotate(yaw_mat, -Math::radians(mouse_offset.x), glm::vec3(0.0f, 1.0f, 0.0f));
-	m_end_forward = yaw_mat * vec4(m_beg_forward, 0.0f);
+	m_phi += mouse_offset.x;
+	m_theta += mouse_offset.y * 0.5;
 	
-	vec3 end_right = Math::cross(m_end_forward, m_settings.world_up);
-	end_right = normalize(end_right);
+	m_theta = Math::max(EPSILON, m_theta);
+	m_theta = Math::min(PI - EPSILON, m_theta);
+	
+	vec3 dir = { sin(m_theta) * sin(m_phi), 
+				cos(m_theta), 
+				sin(m_theta) * cos(m_phi) };
+	m_eye = m_lookat + dir * m_radius;
 
-	/*
-	mat4 pitch_mat = mat4(1.0f);
-	pitch_mat = Math::rotate(pitch_mat, Math::radians(mouse_offset.y), end_right);
-	m_end_forward = pitch_mat * vec4(m_end_forward, 0.0f);
-	// 对picth的角度进行限制
-	m_end_forward.y = Math::clamp(m_end_forward.y, -0.9f, +0.9f);
-	m_end_forward = Math::normalize(m_end_forward);
-	*/
-
-	m_forward = m_end_forward;
+	m_dir = normalize(m_eye - m_lookat);
+	m_forward = -m_dir;
 }
