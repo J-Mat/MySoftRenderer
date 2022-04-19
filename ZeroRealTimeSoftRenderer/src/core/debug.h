@@ -21,7 +21,7 @@ class Log
 public:
 	Log()
 	{
-		m_bUseFile = true;
+		m_bUseFile = false;
 		ofs.open("C:\\Users\\zjmn4182\\Desktop\\aaa\\01.txt", ios::out);
 	};
 	~Log() {};
@@ -40,6 +40,29 @@ public:
 		else
 			cout << str;
 	}
+
+	void OutMat(mat4 mat)
+	{
+		if (m_bUseFile)
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					ofs << mat[i][j] << " ";
+				}
+				ofs << "\n";
+			}
+		else
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					cout << mat[i][j] << " ";
+				}
+				cout << "\n";
+			}
+	}
+
 
 	template <typename T>
 	void OutValue(T str)

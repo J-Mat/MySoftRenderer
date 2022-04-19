@@ -14,21 +14,40 @@ namespace Math
 		vec3 left = glm::normalize(glm::cross(up, forward));
 		up = glm::normalize(glm::cross(forward, left));
 		
+		/*
 		m[0][0] = left[0];
 		m[0][1] = left[1];
 		m[0][2] = left[2];
+		*/
+
+		m[0][0] = left[0];
+		m[1][0] = left[1];
+		m[2][0] = left[2];
 		
+		/*
 		m[1][0] = up[0];
 		m[1][1] = up[1];
 		m[1][2] = up[2];
+		*/
+
+		m[0][1] = up[0];
+		m[1][1] = up[1];
+		m[2][1] = up[2];
 		
+		/*
 		m[2][0] = forward[0];
 		m[2][1] = forward[1];
+		m[2][2] = forward[2];
+		*/
+
+		m[0][2] = forward[0];
+		m[1][2] = forward[1];
 		m[2][2] = forward[2];
 
 		m[3][0] = -glm::dot(left,eye);
 		m[3][1] = -glm::dot(up, eye);
 		m[3][2] = -glm::dot(forward, eye);
+
 
 		return m;
 	}

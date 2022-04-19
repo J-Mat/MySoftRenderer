@@ -105,8 +105,8 @@ void Camera::ProcessMouseMovement(float delta_time)
 {
 	vec2 mouse_offset = Input::GetMouseOffset() * m_settings.mouse_sensivity * delta_time;
 
-	m_phi += mouse_offset.x;
-	m_theta += mouse_offset.y * 0.5;
+	m_phi -= mouse_offset.x;
+	m_theta -= mouse_offset.y * 0.5;
 	
 	m_theta = Math::max(EPSILON, m_theta);
 	m_theta = Math::min(PI - EPSILON, m_theta);

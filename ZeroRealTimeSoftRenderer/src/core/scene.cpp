@@ -53,7 +53,7 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// 相机
-	const vec3 eye(0, 0, 3);
+	const vec3 eye(7, 0, 6);
 	const vec3 target(0, 0, 0);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
@@ -63,12 +63,14 @@ void Scene_Model::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std::
 	std::vector<char*> mesh_names =
 	{
 		"../res/helmet/helmet.obj",
+		//"../res/gun/Cerberus.obj",
+		//"../res/sphere.obj",
 	};
 	
 	for (char* name : mesh_names)
 	{
 		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(name);
-		std::shared_ptr<IShader> shader = std::make_shared<Shader_PBR>();
+		std::shared_ptr<IShader> shader = std::make_shared<Shader_IBL>();
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(mesh, shader);
 		m_render_commands.push_back(command);
 	}	
@@ -93,8 +95,8 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// 相机
-	const vec3 eye(3, 1, -5);
-	const vec3 target(0, 1, 0);
+	const vec3 eye(0, 0, -3);
+	const vec3 target(0, 0, 0);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
 	m_main_camera->Init(eye, target);
@@ -103,7 +105,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 
 	std::vector<char*> mesh_names =
 	{
-		//../res/gun/Cerberus.obj",
+		//"../res/gun/Cerberus.obj",
 		"../res/helmet/helmet.obj",
 		"../res/skybox4/box.obj",
 	};

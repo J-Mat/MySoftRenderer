@@ -215,7 +215,14 @@ static int is_back_facing(vec3 ndc_pos[3])
 
 void Pipeline::RunFragmentStage()
 {	
-
+	/*
+	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[0]);
+	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[0]);
+	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[1]);
+	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[1]);
+	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[2]);
+	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[2]);
+	*/
 	float w_value[3];
 	float z_value[3];
 	vec3 ndc[3];

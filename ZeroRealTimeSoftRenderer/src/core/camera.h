@@ -50,14 +50,10 @@ private:
 	float  m_radius;
 	float m_phi;
 	float m_theta;
-	vec3 m_beg_forward;
-	vec3 m_end_forward;
 	vec3 m_right;
 	vec3 m_up;
 	mat4 m_view_mat;
 	mat4 m_project_mat;
-	float m_yaw;
-	float m_pitch;
 private:
 	void UpdateMat();
 	void ProcessKeyboard(float delta_time);
