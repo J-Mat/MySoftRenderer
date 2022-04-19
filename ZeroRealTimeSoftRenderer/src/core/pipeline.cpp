@@ -269,7 +269,6 @@ void Pipeline::RunFragmentStage()
 			
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba))
 			{
-
 				// https://zhuanlan.zhihu.com/p/403259571 Í¸ÊÓ½ÃÕý²åÖµ
 				alpha = barycentric_coord.x / w_value[0];
 				beta = barycentric_coord.y / w_value[1];
@@ -279,35 +278,10 @@ void Pipeline::RunFragmentStage()
 				beta *= z_n;
 				gamma *= z_n;
 
-				Log::GetInstance()->OutString("screen-----------------------------\n");
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[0]);
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[1]);
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().screen_coord[2]);
-
-				Log::GetInstance()->OutString("normal-----------------------------\n");
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[0]);
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[1]);
-				Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().normals[2]);
-				
-				Log::GetInstance()->OutString("ndc-----------------------------\n");
-				Log::GetInstance()->Out_Pos3(ndc[0]);
-				Log::GetInstance()->Out_Pos3(ndc[1]);
-				Log::GetInstance()->Out_Pos3(ndc[2]);
-
-				Log::GetInstance()->OutString("ba-----------------------------\n");
-				Log::GetInstance()->Out_Pos3(barycentric_coord);
-
-				Log::GetInstance()->OutString("\n");
-
-				vec3 normal =  s_shader->GetAttribute().normals[0] * barycentric_coord.x +
-					s_shader->GetAttribute().normals[1] * barycentric_coord.y +
-					s_shader->GetAttribute().normals[2] * barycentric_coord.z;
-				s_color_buffer->SetPixel(x, y, vec4(normal, 1.0));
-
-				//if (s_shader->FragmentShader(alpha, beta, gamma))
-				//{
-					//s_color_buffer->SetPixel(x, y, s_shader->frag_color);
-				//}
+				if (s_shader->FragmentShader(alpha, beta, gamma))
+				{
+					s_color_buffer->SetPixel(x, y, s_shader->frag_color);
+				}
 			}
 		}
 	}

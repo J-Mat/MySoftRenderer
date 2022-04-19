@@ -22,8 +22,8 @@ public:
 	virtual void Startup()
 	{
 		//m_scene = std::make_shared<Scene_HelloTriangle>();
-		//m_scene = std::make_shared<Scene_Skybox>();
-		m_scene = std::make_shared<Scene_Model>();
+		m_scene = std::make_shared<Scene_Skybox>();
+		//m_scene = std::make_shared<Scene_Model>();
 		m_scene->GenerateScene(m_color_buffer, m_z_buffer);
 	}
 

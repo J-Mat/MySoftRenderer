@@ -93,7 +93,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	Pipeline::BindColorBuffer(color_buffer);
 	Pipeline::BindZBuffer(z_buffer);
 	// Па»ъ
-	const vec3 eye(0, 1, 5);
+	const vec3 eye(3, 1, -5);
 	const vec3 target(0, 1, 0);
 	CameraSettings settings;
 	m_main_camera = std::make_shared<Camera>(settings);
@@ -103,7 +103,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 
 	std::vector<char*> mesh_names =
 	{
-		//"../res/gun/Cerberus.obj",
+		//../res/gun/Cerberus.obj",
 		"../res/helmet/helmet.obj",
 		"../res/skybox4/box.obj",
 	};
@@ -119,7 +119,7 @@ void Scene_Skybox::GenerateScene(std::shared_ptr<ColorBuffer> color_buffer, std:
 	meshes[1] = std::make_shared<Mesh>(mesh_names[1], true);
 	shaders[1] = std::make_shared<Shader_Skybox>();
 	
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		std::shared_ptr<RenderCommand> command = std::make_shared<RenderCommand>(meshes[i], shaders[i]);
 		m_render_commands.push_back(command);
