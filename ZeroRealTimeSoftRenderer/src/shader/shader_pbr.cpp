@@ -11,10 +11,10 @@ void Shader_PBR::VertexShader(int vertex_idx)
 	const mat4& projection = GetUniform().project_mat;
 
 	const vec3& pos = GetClipAttribute().pos[vertex_idx];
-	//const vec3& normal = GetClipAttribute().normals[vertex_idx];
+	const vec3& normal = GetClipAttribute().normals[vertex_idx];
 	// MVP
 	GetClipAttribute().world_pos[vertex_idx] = model * vec4(pos, 1.0);
-	//GetClipAttribute().normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
+	GetClipAttribute().normals[vertex_idx] = mat3(transpose(inverse(model))) * normal;
 	GetClipAttribute().ndc_coord[vertex_idx] = projection * view * vec4(GetClipAttribute().world_pos[vertex_idx], 1.0f);
 }
 

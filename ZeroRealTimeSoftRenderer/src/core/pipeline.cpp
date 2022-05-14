@@ -16,7 +16,6 @@ glm::vec3 Pipeline::GetSreenCoord(vec4 ndc_coord)
 
 }
 
-
 vec3 Pipeline::GetBarycentric(const vec2& A, const vec2& B, const vec2& C, const vec2& P)
 {
 	vec3 x_vec = { B.x - A.x, C.x - A.x, A.x - P.x };
@@ -181,18 +180,6 @@ void Pipeline::RunVertexStage()
 	{
 		s_shader->VertexShader(i);
 	}
-	
-/*
-	auto& output_att = s_shader->GetClipAttribute();
-	DEBUG_INFO("-------------------------------------------\n");
-	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[0]);
-	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[1]);
-	DEBUG_INFO("--pos:  "); DEBUG_POS3(output_att.world_pos[2]);
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[0]);
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[1]);
-	DEBUG_INFO("--ndc:  "); DEBUG_POS4(output_att.ndc_coord[2]);
-	DEBUG_INFO("-------------------------------------------\n");
-*/
 }
 
 bool Pipeline::VisibleClip()
@@ -215,18 +202,10 @@ static int is_back_facing(vec3 ndc_pos[3])
 
 void Pipeline::RunFragmentStage()
 {	
-	/*
-	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[0]);
-	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[0]);
-	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[1]);
-	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[1]);
-	Log::GetInstance()->Out_Pos3(s_shader->GetAttribute().world_pos[2]);
-	Log::GetInstance()->Out_Pos4(s_shader->GetAttribute().ndc_coord[2]);
-	*/
 	float w_value[3];
 	float z_value[3];
 	vec3 ndc[3];
-	//DEBUG_INFO("------------------------\n");
+
 	for (int i = 0; i <  3; ++i) 
 	{
 		w_value[i] = s_shader->GetAttribute().ndc_coord[i].w;
@@ -236,22 +215,12 @@ void Pipeline::RunFragmentStage()
 				   s_shader->GetAttribute().ndc_coord[i].z / s_shader->GetAttribute().ndc_coord[i].w,
 		};
 		s_shader->GetAttribute().screen_coord[i] = GetSreenCoord(s_shader->GetAttribute().ndc_coord[i]);
-		
-		/*
-		DEBUG_INFO("w     %d:  ", i); DEBUG_VALUE(z_value[i]);
-		DEBUG_INFO("ndc   %d:  ", i); DEBUG_POS3(ndc[i]);
-		DEBUG_INFO("screen   %d:  ", i); DEBUG_POS2(s_shader->GetAttribute().screen_coord[i]);
-		*/
 	}
-
 
 	ivec2 min_box = { s_color_buffer->GetHeight() - 1,  s_color_buffer->GetWidth() - 1};
 	ivec2 max_box = { 0, 0};
 	GetBoundingBox(min_box, max_box);
-	//DEBUG_INFO("min    :  "); DEBUG_POS2(min_box);
-	//DEBUG_INFO("max    :  "); DEBUG_POS2(max_box);
 	
-	//DEBUG_INFO("------------------------\n");
 	for (int x = min_box.x; x <= max_box.x; ++x)
 	{
 		for (int y = min_box.y; y <= max_box.y; ++y)
@@ -272,7 +241,6 @@ void Pipeline::RunFragmentStage()
 			float beta = barycentric_coord.y;
 			float gamma = barycentric_coord.z;
 			float z_ba = GET_BA_VALUE(float, z_value);
-
 			
 			if (s_zbuffer->WriteValue(P.x, P.y, z_ba))
 			{

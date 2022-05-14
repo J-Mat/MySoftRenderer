@@ -105,11 +105,10 @@ glm::vec3 Utils::CubemapSample(vec3 direction, Cubemap* cubemap)
 
 void Utils::LoadTextureFromFile(std::string& file_name, TGAImage* image)
 {
-	if (!image->read_tga_file(file_name.c_str()))
+	if (image->read_tga_file(file_name.c_str()))
 	{
-		DEBUG_INFO("xxoo----------------");
+		image->flip_vertically();
 	}
-	image->flip_vertically();
 }
 
 void Utils::LoadCubmapFromFiles(std::vector<std::string>& paths, Cubemap* cubemap)
